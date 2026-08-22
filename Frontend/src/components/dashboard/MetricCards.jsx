@@ -48,7 +48,7 @@ export const MetricCards = () => {
         return (
           <div
             key={m.id}
-            className="bg-[#faf8f5] sm:bg-white p-5 rounded-2xl border border-[#e8e2d5] shadow-2xs hover:shadow-md transition-all duration-200"
+            className="bg-[#faf8f5] sm:bg-white p-5 rounded-2xl border border-[#e8e2d5] shadow-xs card-lift"
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">

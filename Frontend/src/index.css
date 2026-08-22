@@ -54,3 +54,87 @@ body {
 .animate-float-glow {
   animation: floatGlow 12s ease-in-out infinite;
 }
+
+/* ---------------------------------------------------------------
+   Polish layer — global refinements, no component changes needed.
+   --------------------------------------------------------------- */
+
+:root {
+  --ink: #1c3541;
+  --gold: #e5b869;
+  --cream: #faf8f5;
+  --line: #e8e2d5;
+}
+
+/* Figures must line up in columns. Without this, every table and every
+   currency amount jitters as the digits change width. */
+table, .tabular, [class*="tabular-nums"], td, th, dd, time {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Brand-coloured focus ring. The browser default is a blue outline that
+   fights the palette, and removing it outright breaks keyboard use. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--gold) 45%, transparent);
+  color: var(--ink);
+}
+
+/* Layered shadows read as depth; a single flat shadow reads as a border. */
+.shadow-xs  { box-shadow: 0 1px 2px rgb(28 53 65 / 0.04), 0 1px 1px rgb(28 53 65 / 0.03); }
+.shadow-md  { box-shadow: 0 2px 4px rgb(28 53 65 / 0.04), 0 8px 24px -8px rgb(28 53 65 / 0.10); }
+.shadow-lg  { box-shadow: 0 4px 8px rgb(28 53 65 / 0.05), 0 20px 40px -12px rgb(28 53 65 / 0.14); }
+
+/* Cards lift slightly on hover — enough to feel responsive, not enough to bounce. */
+.card-lift {
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgb(28 53 65 / 0.06), 0 24px 48px -16px rgb(28 53 65 / 0.18);
+}
+
+/* Scrollbars, so long tables don't end in a chunky grey slab. */
+.custom-scrollbar { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d6cdb8; background-clip: content-box; }
+
+/* Skeleton shimmer for loading rows. */
+@keyframes shimmer { 100% { background-position: -200% 0; } }
+.skeleton {
+  background: linear-gradient(90deg, #efe9dd 25%, #f7f3ea 37%, #efe9dd 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 10px;
+}
+
+/* Rows should highlight on hover — scanning a wide table without it is hard. */
+tbody tr { transition: background-color 120ms ease; }
+tbody tr:hover { background-color: color-mix(in srgb, var(--gold) 7%, transparent); }
+
+/* Headings get the display face and tighter tracking. */
+h1, h2, h3 { letter-spacing: -0.015em; }
+
+/* Respect people who have asked the OS to reduce motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

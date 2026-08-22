@@ -197,7 +197,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
             <div
               key={emp.id || loginId}
               onClick={() => onSelectEmployee && onSelectEmployee(emp)}
-              className="bg-white p-5 rounded-2xl border border-[#e8e2d5] shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between cursor-pointer group"
+              className="bg-white p-5 rounded-2xl border border-[#e8e2d5] shadow-xs card-lift flex flex-col justify-between cursor-pointer group"
             >
               <div>
                 <div className="flex items-start justify-between gap-3 mb-4">
