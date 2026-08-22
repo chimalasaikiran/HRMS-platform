@@ -8,7 +8,7 @@ class AppError extends Error {
 }
 
 function sendError(res, status, code, message) {
-  // Top-level `message` keeps Frontend AuthContext happy (reads responseData.message first)
+  // Top-level `message` keeps Frontend extractErrorMessage happy
   return res.status(status).json({
     message,
     error: { code, message },

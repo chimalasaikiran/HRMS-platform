@@ -103,7 +103,7 @@ export const SignUpForm = ({ onSwitchToSignIn, onSuccessRedirect }) => {
           type="text"
           value={employeeId}
           onChange={(e) => setEmployeeId(e.target.value)}
-          placeholder="Enter the email"
+          placeholder="e.g. EMP-2026-01"
           leftIcon={Hash}
           required
         />
@@ -114,7 +114,7 @@ export const SignUpForm = ({ onSwitchToSignIn, onSuccessRedirect }) => {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter the email"
+          placeholder="you@company.com"
           leftIcon={Mail}
           required
         />
@@ -125,7 +125,7 @@ export const SignUpForm = ({ onSwitchToSignIn, onSuccessRedirect }) => {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="password"
+          placeholder="At least 6 characters"
           leftIcon={Lock}
           required
         />
@@ -136,7 +136,7 @@ export const SignUpForm = ({ onSwitchToSignIn, onSuccessRedirect }) => {
           type="text"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
-          placeholder="Name"
+          placeholder="Full name"
           leftIcon={User}
           required
         />
