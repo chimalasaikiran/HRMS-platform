@@ -28,7 +28,7 @@ router.use((req, res, next) => {
  * Identity comes from the verified JWT only. The body supplies conversation text and
  * nothing else — never a role, employee id, or company id.
  */
-router.post('/chat', authJwt, async (req, res, next) => {
+async function handleChat(req, res, next) {
   try {
     // Lazy-load so missing optional AI packages do not crash the whole server on boot
     let chat;
@@ -68,6 +68,24 @@ router.post('/chat', authJwt, async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+}
+
+router.post('/chat', authJwt, handleChat);
+
+/**
+ * Compatibility alias. The frontend calls POST /ai/query with a single
+ * { query } or { message } string instead of a messages array. Normalise it
+ * and reuse the same handler so both shapes return an identical payload.
+ */
+router.post('/query', authJwt, (req, res, next) => {
+  const body = req.body || {};
+  if (!Array.isArray(body.messages)) {
+    const text = body.query || body.message || body.prompt || body.content;
+    if (typeof text === 'string' && text.trim()) {
+      req.body = { ...body, messages: [{ role: 'user', content: text }] };
+    }
+  }
+  return handleChat(req, res, next);
 });
 
 module.exports = router;
