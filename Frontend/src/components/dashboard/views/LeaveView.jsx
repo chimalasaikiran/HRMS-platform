@@ -36,14 +36,26 @@ export const LeaveView = () => {
 
   const [notificationMsg, setNotificationMsg] = useState('');
 
+  const [applyError, setApplyError] = useState('');
+
   // Submit leave application (Employee action)
   const handleApplySubmit = (e) => {
     e.preventDefault();
-    if (!startDate || !endDate) return;
+    setApplyError('');
+    if (!startDate || !endDate) {
+      setApplyError('Please select both Start Date and End Date.');
+      return;
+    }
 
-    // Calculate duration in days
     const start = new Date(startDate);
     const end = new Date(endDate);
+
+    if (end < start) {
+      setApplyError('End Date cannot be earlier than Start Date.');
+      return;
+    }
+
+    // Calculate duration in days
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
@@ -61,6 +73,7 @@ export const LeaveView = () => {
     setStartDate('');
     setEndDate('');
     setRemarks('');
+    setApplyError('');
     setNotificationMsg('Leave application submitted successfully for HR review!');
     setTimeout(() => setNotificationMsg(''), 3000);
   };
@@ -264,6 +277,13 @@ export const LeaveView = () => {
                 <X className="w-5 h-5" />
               </button>
             </div>
+
+            {applyError && (
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <span>{applyError}</span>
+              </div>
+            )}
 
             <form onSubmit={handleApplySubmit} className="space-y-4">
               {/* Leave Type */}

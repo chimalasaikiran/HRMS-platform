@@ -39,8 +39,11 @@ export const EmployeesView = ({ onSelectEmployee }) => {
 
   const [notification, setNotification] = useState('');
 
+  const [modalError, setModalError] = useState('');
+
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
+    setModalError('');
     try {
       const res = await createEmployee(newEmpForm);
       setIsAddModalOpen(false);
@@ -61,7 +64,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
         dateOfJoining: new Date().toISOString().split('T')[0]
       });
     } catch (err) {
-      alert(err.message || 'Failed to create employee');
+      setModalError(err.message || 'Failed to create employee account. Please check inputs.');
     }
   };
 
@@ -272,6 +275,12 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                 <X className="w-5 h-5" />
               </button>
             </div>
+
+            {modalError && (
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
+                <span>⚠️ {modalError}</span>
+              </div>
+            )}
 
             <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
