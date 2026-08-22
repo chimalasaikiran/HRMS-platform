@@ -121,7 +121,7 @@ Those are items 1–7 in section 1. They are the demo.
 | Mongo transaction fails (not a replica set) | Atlas is a replica set and supports them. On a local single node, fall back to sequential writes and accept the small race. |
 | Salary figures do not match the mockup | The wireframe's own numbers do not reconcile — Fixed Allowance should be ₹4,168, printed as ₹2,918. Implement the **rule**, mention it if asked. |
 | Model hallucinates a number | Tools return finished values; the model never calculates. See rule 1 in Hari's brief. |
-| Merge conflicts late in the build | Three separate top-level folders — `server/`, `client/`, `server/src/ai/`. Commit small and often. |
+| Merge conflicts late in the build | Three separate top-level folders — `backend/`, `client/`, `backend/src/ai/`. Commit small and often. |
 
 ---
 

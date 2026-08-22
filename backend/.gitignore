@@ -1,20 +1,12 @@
 node_modules/
-**/node_modules/
 .env
-**/.env
-.env.*
-!**/.env.example
 *.log
 .DS_Store
-dist/
-build/
-.coverage
+.env.local
+.env.*.local
 
 # Cursor / agent — never push
 .cursor/
-**/.cursor/
 .agent/
-**/.agent/
 agent-transcripts/
-**/agent-transcripts/
 *.canvas.tsx

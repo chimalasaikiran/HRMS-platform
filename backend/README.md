@@ -1,6 +1,6 @@
 # Dayflow Server (Member 2)
 
-Express + MongoDB backend for Dayflow HRMS. Implements the frozen [api-contract](../docs/api-contract.md).
+Express + MongoDB backend for Dayflow HRMS. Implements the frozen [api-contract](./docs/api-contract.md).
 
 ## Quick start
 

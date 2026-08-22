@@ -6,6 +6,29 @@ const { round2 } = require('../utils/dates');
  */
 function computeSalary(wageInput) {
   const wage = round2(wageInput);
+
+  // Edge: unset / zero wage — no phantom fixed allowances or negative net
+  if (!wage || wage <= 0) {
+    return {
+      wage: 0,
+      earnings: [
+        { key: 'BASIC', label: 'Basic Salary', amount: 0, percent: 50.0 },
+        { key: 'HRA', label: 'House Rent Allowance', amount: 0, percent: 50.0 },
+        { key: 'STD', label: 'Standard Allowance', amount: 0, percent: 0 },
+        { key: 'BONUS', label: 'Performance Bonus', amount: 0, percent: 8.33 },
+        { key: 'LTA', label: 'Leave Travel Allowance', amount: 0, percent: 8.33 },
+        { key: 'FIXED', label: 'Fixed Allowance', amount: 0, percent: 0 },
+      ],
+      deductions: [
+        { key: 'PF_EMPLOYEE', label: 'PF — employee', amount: 0, percent: 12.0 },
+        { key: 'PF_EMPLOYER', label: 'PF — employer', amount: 0, percent: 12.0 },
+        { key: 'PTAX', label: 'Professional Tax', amount: 0 },
+      ],
+      gross: 0,
+      netPay: 0,
+    };
+  }
+
   const basic = round2(wage * 0.5);
   const hra = round2(basic * 0.5);
   const std = round2(4167);
@@ -21,7 +44,7 @@ function computeSalary(wageInput) {
   const netPay = round2(gross - pfEmployee - ptax);
 
   const pctOfBasic = (amount) => (basic === 0 ? 0 : round2((amount / basic) * 100));
-  const pctOfWage = (amount) => (wage === 0 ? 0 : round2((amount / wage) * 100));
+  const pctOfWage = (amount) => round2((amount / wage) * 100);
 
   return {
     wage,
