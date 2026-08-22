@@ -44,7 +44,19 @@ function errorHandler(err, req, res, next) {
     return sendError(res, err.status, err.code, err.message);
   }
 
-  console.error(err);
+  // Log the full error server-side with the request id, but never return the
+  // stack or driver message to the client — those leak schema and file paths.
+  console.error(
+    JSON.stringify({
+      id: req.id || '-',
+      level: 'error',
+      method: req.method,
+      path: req.originalUrl,
+      user: req.user ? `${req.user.role}:${req.user.id}` : 'anon',
+      message: err.message,
+      stack: (err.stack || '').split(String.fromCharCode(10)).slice(0, 4).join(' | '),
+    })
+  );
   return sendError(res, 500, 'INTERNAL_ERROR', 'Something went wrong');
 }
 

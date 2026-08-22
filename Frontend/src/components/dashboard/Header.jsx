@@ -38,7 +38,7 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
           <span className="text-xs font-semibold text-slate-500">Welcome to Dayflow</span>
           <span className="w-1 h-1 rounded-full bg-slate-300" />
           <span className="text-xs font-semibold text-[#1c3541]">
-            {currentUser?.role === 'Employee' ? 'Employee Portal' : 'Admin & HR Management'}
+            {currentUser?.role === 'EMPLOYEE' ? 'Employee Portal' : 'Admin & HR Management'}
           </span>
         </div>
       </div>

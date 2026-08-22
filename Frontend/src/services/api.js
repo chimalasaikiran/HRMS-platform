@@ -58,6 +58,27 @@ export async function sendApiRequest(endpointPath, options = {}) {
 
   let lastError = null;
 
+  /**
+   * Retry policy.
+   *
+   * The API is on a free tier that sleeps after ~15 minutes idle, and a cold
+   * start takes roughly 50 seconds. A single 5s attempt therefore fails every
+   * time the service has been quiet — which is exactly the state it is in when
+   * someone opens the app for a demo.
+   *
+   * So: three attempts with a widening timeout and a short backoff. Only
+   * transient failures are retried; a 4xx is a real answer and is thrown
+   * immediately, and non-idempotent writes are not retried at all.
+   */
+  const method = (options.method || 'GET').toUpperCase();
+  const isIdempotent = method === 'GET' || method === 'HEAD';
+  const TIMEOUTS = isIdempotent ? [6000, 20000, 45000] : [12000];
+
+  for (let attempt = 0; attempt < TIMEOUTS.length; attempt++) {
+    if (attempt > 0) {
+      await new Promise((r) => setTimeout(r, 700 * attempt));
+    }
+
   for (const baseUrl of endpointsToTry) {
     const cleanBaseUrl = baseUrl.replace(/\/$/, '');
     const cleanPath = endpointPath.startsWith('/') ? endpointPath : `/${endpointPath}`;
@@ -70,7 +91,7 @@ export async function sendApiRequest(endpointPath, options = {}) {
           ...options,
           headers
         },
-        5000
+        TIMEOUTS[attempt]
       );
 
       workingBaseUrl = baseUrl;
@@ -109,9 +130,11 @@ export async function sendApiRequest(endpointPath, options = {}) {
       lastError = err;
     }
   }
+  }
 
   throw new Error(
-    lastError?.message || `Unable to connect to server at ${API_ENDPOINTS[0]}`
+    lastError?.message ||
+      `Could not reach the server. It may be waking up — please try again in a moment.`
   );
 }
 
@@ -119,7 +142,7 @@ export async function checkServerStatus() {
   for (const url of API_ENDPOINTS) {
     const cleanBaseUrl = url.replace(/\/$/, '');
     try {
-      const res = await fetchWithTimeout(`${cleanBaseUrl}/health`, { method: 'GET' }, 2000);
+      const res = await fetchWithTimeout(`${cleanBaseUrl}/health`, { method: 'GET' }, 8000);
       if (res.ok) {
         workingBaseUrl = url;
         return { online: true, activeUrl: cleanBaseUrl };

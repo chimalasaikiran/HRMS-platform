@@ -18,7 +18,7 @@ export const LeaveView = () => {
   const { currentUser } = useAuth();
   const { leaveRequests, applyLeave, approveLeave, rejectLeave } = useHrms();
 
-  const isEmployee = currentUser?.role === 'Employee';
+  const isEmployee = currentUser?.role === 'EMPLOYEE';
   const empId = currentUser?.employeeId || 'EMP-2025-88';
   const empName = currentUser?.fullName || 'Alex Morgan';
 

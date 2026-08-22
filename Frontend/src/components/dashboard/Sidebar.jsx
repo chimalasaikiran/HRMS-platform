@@ -20,7 +20,7 @@ export const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
   const { leaveRequests } = useHrms();
   const [workspaceMenuOpen, setWorkspaceMenuOpen] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState(
-    currentUser?.role === 'Employee' ? 'Employee Portal' : 'People team'
+    currentUser?.role === 'EMPLOYEE' ? 'Employee Portal' : 'People team'
   );
 
   const isEmployee = currentUser?.role === 'EMPLOYEE';

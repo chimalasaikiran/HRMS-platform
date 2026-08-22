@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
@@ -17,12 +18,29 @@ import { PayrollView } from './views/PayrollView';
 import { ProfileView } from './views/ProfileView';
 import { AiAssistantPanel } from '../ai/AiAssistantPanel';
 
+
+/** Shown when someone reaches a view their role cannot use. */
+const RestrictedView = () => (
+  <div className="bg-white rounded-2xl border border-[#e8e2d5] shadow-xs p-10 text-center">
+    <div className="w-12 h-12 rounded-2xl bg-[#faf8f5] border border-[#e8e2d5] flex items-center justify-center mx-auto mb-4">
+      <Lock className="w-5 h-5 text-slate-400" />
+    </div>
+    <h3 className="font-serif-title text-lg font-bold text-[#1c3541]">
+      Restricted
+    </h3>
+    <p className="text-xs text-slate-500 mt-1.5 max-w-sm mx-auto">
+      This section is available to HR officers only. Your own records are on the
+      Attendance, Leave and Payroll tabs.
+    </p>
+  </div>
+);
+
 export const Dashboard = () => {
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const isEmployee = currentUser?.role === 'Employee';
+  const isEmployee = currentUser?.role === 'EMPLOYEE';
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-slate-800 font-sans flex">
@@ -67,7 +85,11 @@ export const Dashboard = () => {
           )}
 
           {/* SHARED / SCOPED VIEWS */}
-          {activeTab === 'employees' && <EmployeesView />}
+          {/* Admin-only. The sidebar hides this tab for employees, but hiding a
+              nav item is not access control — guard the render too. The API
+              refuses the data regardless; this stops a broken half-page. */}
+          {activeTab === 'employees' &&
+            (isEmployee ? <RestrictedView /> : <EmployeesView />)}
           {activeTab === 'attendance' && <AttendanceView />}
           {activeTab === 'leave' && <LeaveView />}
           {activeTab === 'payroll' && <PayrollView />}
