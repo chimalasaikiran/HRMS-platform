@@ -27,6 +27,12 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 app.use('/api', routes);
 
+// 404 handler for unmatched routes
+app.use((req, res, next) => {
+  const { AppError } = require('./middleware/errorHandler');
+  next(new AppError('NOT_FOUND', `Route ${req.method} ${req.originalUrl} not found`, 404));
+});
+
 app.use(errorHandler);
 
 async function start() {

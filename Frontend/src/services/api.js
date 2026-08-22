@@ -85,9 +85,14 @@ export async function sendApiRequest(endpointPath, options = {}) {
       }
 
       if (!response.ok) {
-        const errMessage = responseData?.error?.message || responseData?.message || `HTTP ${response.status}`;
+        const errMessage =
+          responseData?.error?.message ||
+          responseData?.message ||
+          (typeof responseData?.error === 'string' ? responseData.error : null) ||
+          `HTTP ${response.status}: ${response.statusText}`;
         const err = new Error(errMessage);
         err.status = response.status;
+        err.code = responseData?.error?.code || responseData?.code || 'API_ERROR';
         err.data = responseData;
         throw err;
       }
@@ -210,15 +215,29 @@ export const getConfiguredEndpoints = () => API_ENDPOINTS;
 export const getActiveBaseUrl = () => workingBaseUrl || API_ENDPOINTS[0];
 
 export const aiApi = {
-  chat: (messages) =>
-    sendApiRequest('/ai/chat', {
+  chat: (payload) => {
+    const body = Array.isArray(payload)
+      ? { messages: payload }
+      : typeof payload === 'string'
+      ? { prompt: payload, messages: [{ role: 'user', content: payload }] }
+      : payload;
+
+    return sendApiRequest('/ai/chat', {
       method: 'POST',
-      body: JSON.stringify({ messages })
-    }),
-  query: (payload) =>
-    sendApiRequest('/ai/query', {
+      body: JSON.stringify(body)
+    });
+  },
+  query: (payload) => {
+    const promptStr = typeof payload === 'string' ? payload : payload?.prompt || '';
+    const body = {
+      prompt: promptStr,
+      messages: payload?.messages || [{ role: 'user', content: promptStr }]
+    };
+
+    return sendApiRequest('/ai/query', {
       method: 'POST',
-      body: JSON.stringify(payload)
-    })
+      body: JSON.stringify(body)
+    });
+  }
 };
 
