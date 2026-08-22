@@ -120,6 +120,14 @@ const definitions = [
       }
 
       const workingDays = countWorkingDays(startDate, endDate);
+      if (workingDays === 0) {
+        // POST /api/timeoff requires days > 0, so refuse here with something useful
+        // rather than letting the user confirm a draft that cannot be submitted.
+        throw new Error(
+          `${startDate} to ${endDate} contains no working days (weekends are not deducted from leave). Ask the user for a range that includes at least one weekday.`
+        );
+      }
+
       const balance = await timeOffService.getLeaveBalance(userCtx).catch(rethrow);
       const before = balance[type] ? balance[type].available : null;
 
