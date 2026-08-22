@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
     const payload = { email: formattedEmail, password, role };
 
     try {
-      // Attempt backend API call to http://192.168.0.244:5000/api or http://100.64.1.27:5000/api
+      // Attempt backend API call to https://hrms-platform-monh.onrender.com/api
       const apiResult = await authApi.login(payload);
       const userFromBackend = apiResult.data?.user || apiResult.data;
 
@@ -135,7 +135,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     try {
-      // Attempt backend API call to http://192.168.0.244:5000/api or http://100.64.1.27:5000/api
+      // Attempt backend API call to https://hrms-platform-monh.onrender.com/api
       const apiResult = await authApi.signup(payload);
       const responseUser = apiResult.data?.user || apiResult.data;
 

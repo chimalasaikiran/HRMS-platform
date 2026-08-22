@@ -1,5 +1,6 @@
 import React from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { HrmsProvider } from './context/HrmsContext';
 import { AuthPage } from './pages/AuthPage';
 import { Dashboard } from './components/dashboard/Dashboard';
 
@@ -20,7 +21,10 @@ const MainApp = () => {
 export default function App() {
   return (
     <AuthProvider>
-      <MainApp />
+      <HrmsProvider>
+        <MainApp />
+      </HrmsProvider>
     </AuthProvider>
   );
 }
+

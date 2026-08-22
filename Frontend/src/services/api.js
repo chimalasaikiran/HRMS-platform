@@ -1,8 +1,8 @@
 // API service configuration and client with failover support
 
 const API_ENDPOINTS = [
-  import.meta.env.VITE_API_URL_PRIMARY || 'http://192.168.0.244:5000/api',
-  import.meta.env.VITE_API_URL_SECONDARY || 'http://100.64.1.27:5000/api'
+  import.meta.env.VITE_API_URL_PRIMARY || 'https://hrms-platform-monh.onrender.com/api',
+  import.meta.env.VITE_API_URL_SECONDARY || 'https://hrms-platform-monh.onrender.com/'
 ];
 
 let workingBaseUrl = null;
