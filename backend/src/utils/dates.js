@@ -39,7 +39,15 @@ function eachDateInclusive(startDate, endDate) {
 }
 
 function monthRange(monthStr) {
-  const [y, m] = monthStr.split('-').map(Number);
+  if (!monthStr || !/^\d{4}-\d{2}$/.test(String(monthStr))) {
+    const { AppError } = require('../middleware/errorHandler');
+    throw new AppError('VALIDATION_ERROR', 'month must be YYYY-MM', 400);
+  }
+  const [y, m] = String(monthStr).split('-').map(Number);
+  if (m < 1 || m > 12) {
+    const { AppError } = require('../middleware/errorHandler');
+    throw new AppError('VALIDATION_ERROR', 'month must be YYYY-MM', 400);
+  }
   const start = `${y}-${String(m).padStart(2, '0')}-01`;
   const lastDay = new Date(y, m, 0).getDate();
   const end = `${y}-${String(m).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;

@@ -11,13 +11,23 @@ const { initStore, search } = require('./store');
  * to "return something".
  */
 async function searchPolicy(query, opts = {}) {
+  if (!CONFIG.rag.enabled) return [];
+
   const topK = opts.topK || CONFIG.rag.topK;
   const threshold = opts.scoreThreshold != null ? opts.scoreThreshold : CONFIG.rag.scoreThreshold;
 
-  await initStore();
-
-  const vector = await embedOne(query);
-  const hits = await search(vector, topK);
+  let hits;
+  try {
+    await initStore();
+    const vector = await embedOne(query);
+    hits = await search(vector, topK);
+  } catch (err) {
+    // Out of memory, model download failure, store unreachable — an empty result
+    // makes the agent say it cannot find the answer, which is correct and safe.
+    // It must never take down a request that other tools could still serve.
+    console.error(`[rag] retrieval unavailable: ${err.message}`);
+    return [];
+  }
 
   return hits
     .filter((h) => h.score >= threshold)

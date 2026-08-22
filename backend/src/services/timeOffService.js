@@ -196,17 +196,27 @@ async function approve(userCtx, id, { comment } = {}) {
     throw new AppError('FORBIDDEN', 'Admin access required', 403);
   }
 
-  const req = await TimeOffRequest.findOne({ _id: id, companyId: userCtx.companyId });
-  if (!req) throw new AppError('NOT_FOUND', 'Time off request not found', 404);
-  if (req.status !== 'PENDING') {
+  const req = await TimeOffRequest.findOneAndUpdate(
+    { _id: id, companyId: userCtx.companyId, status: 'PENDING' },
+    {
+      $set: {
+        status: 'APPROVED',
+        reviewerId: userCtx.id,
+        reviewComment: comment || '',
+      },
+    },
+    { new: true }
+  );
+
+  if (!req) {
+    const exists = await TimeOffRequest.findOne({ _id: id, companyId: userCtx.companyId })
+      .select('status')
+      .lean();
+    if (!exists) throw new AppError('NOT_FOUND', 'Time off request not found', 404);
     throw new AppError('CONFLICT', 'Request already reviewed', 409);
   }
 
-  const apply = async (session) => {
-    req.status = 'APPROVED';
-    req.reviewerId = userCtx.id;
-    req.reviewComment = comment || '';
-    await req.save(session ? { session } : undefined);
+  const applyAttendance = async (session) => {
     await writeLeaveAttendance(req.companyId, req.employeeId, req.startDate, req.endDate, session);
   };
 
@@ -214,7 +224,7 @@ async function approve(userCtx, id, { comment } = {}) {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-      await apply(session);
+      await applyAttendance(session);
       await session.commitTransaction();
     } catch (err) {
       await session.abortTransaction();
@@ -224,7 +234,7 @@ async function approve(userCtx, id, { comment } = {}) {
     }
   } catch (err) {
     if (err.message && /transaction|replica set/i.test(err.message)) {
-      await apply(null);
+      await applyAttendance(null);
     } else {
       throw err;
     }

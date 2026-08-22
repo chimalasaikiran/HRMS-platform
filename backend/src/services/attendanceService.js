@@ -42,6 +42,9 @@ async function checkIn(userCtx) {
   };
 
   const existing = await AttendanceRecord.findOne(filter).select('checkIn status').lean();
+  if (existing?.status === 'LEAVE') {
+    throw new AppError('CONFLICT', 'Cannot check in while on approved leave', 409);
+  }
   if (existing?.checkIn) {
     return { checkIn: existing.checkIn, status: existing.status };
   }
@@ -79,6 +82,14 @@ async function checkOut(userCtx) {
   });
   if (!rec || !rec.checkIn) {
     throw new AppError('VALIDATION_ERROR', 'Check in first before checking out', 400);
+  }
+
+  if (rec.checkOut) {
+    return {
+      checkOut: rec.checkOut,
+      workHours: minutesToHHMM(rec.workMinutes),
+      extraHours: minutesToHHMM(rec.extraMinutes),
+    };
   }
 
   const now = formatHHMM();

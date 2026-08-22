@@ -162,34 +162,6 @@ async function registerCompanySequential({ companyName, adminName, email, phone,
   };
 }
 
-async function login({ identifier, password }) {
-  const id = String(identifier).trim();
-  const user = await User.findOne({
-    $or: [{ email: id.toLowerCase() }, { loginId: id.toUpperCase() }],
-  });
-  if (!user) {
-    throw new AppError('UNAUTHORIZED', 'Invalid credentials', 401);
-  }
-
-  const ok = await bcrypt.compare(password, user.passwordHash);
-  if (!ok) {
-    throw new AppError('UNAUTHORIZED', 'Invalid credentials', 401);
-  }
-
-  const [employee, company] = await Promise.all([
-    user.employeeId
-      ? Employee.findById(user.employeeId).select('firstName lastName avatarUrl').lean()
-      : null,
-    Company.findById(user.companyId).select('name').lean(),
-  ]);
-
-  return {
-    token: signToken(user),
-    user: await shapeMe(user, employee, company),
-    mustChangePassword: Boolean(user.mustChangePassword),
-  };
-}
-
 async function changePassword(userId, { currentPassword, newPassword }) {
   const user = await User.findById(userId);
   if (!user) throw new AppError('NOT_FOUND', 'User not found', 404);
@@ -250,10 +222,192 @@ async function shapeMe(user, employee, company) {
   };
 }
 
+/** Frontend display roles ↔ DB roles */
+function mapRoleToDb(role) {
+  const r = String(role || '').trim().toLowerCase();
+  if (
+    r === 'hr / people team' ||
+    r === 'hr' ||
+    r === 'admin' ||
+    r === 'people team'
+  ) {
+    return 'ADMIN';
+  }
+  return 'EMPLOYEE';
+}
+
+function mapRoleToDisplay(dbRole) {
+  return dbRole === 'ADMIN' ? 'HR / People team' : 'Employee';
+}
+
+function splitFullName(fullName) {
+  const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+  return {
+    firstName: parts[0] || 'User',
+    lastName: parts.slice(1).join(' ') || '',
+  };
+}
+
+async function ensureDefaultCompany() {
+  let company = await Company.findOne({ name: 'Dayflow' });
+  if (company) return company;
+  company = await Company.findOne().sort({ createdAt: 1 });
+  if (company) return company;
+  return Company.create({
+    name: 'Dayflow',
+    logoUrl: '',
+    code: 'OI',
+    joiningSerialByYear: {},
+  });
+}
+
+/**
+ * Frontend signup: { employeeId, email, password, fullName, role }
+ * HR → new company + ADMIN; Employee → joins Dayflow (or first) company.
+ */
+async function signup({ employeeId, email, password, fullName, role }) {
+  const empCode = String(employeeId || '').trim().toUpperCase();
+  const emailNorm = String(email || '').trim().toLowerCase();
+  const name = String(fullName || '').trim();
+
+  if (!empCode || !emailNorm || !password || !name) {
+    throw new AppError(
+      'VALIDATION_ERROR',
+      'employeeId, email, password, and fullName are required',
+      400
+    );
+  }
+  if (String(password).length < 6) {
+    throw new AppError('VALIDATION_ERROR', 'Password must be at least 6 characters', 400);
+  }
+
+  const existingEmail = await User.findOne({ email: emailNorm });
+  if (existingEmail) {
+    throw new AppError('CONFLICT', 'Email already registered', 409);
+  }
+
+  const existingLogin = await User.findOne({ loginId: empCode });
+  if (existingLogin) {
+    throw new AppError('CONFLICT', 'This Employee ID is already registered', 409);
+  }
+
+  const dbRole = mapRoleToDb(role);
+  const { firstName, lastName } = splitFullName(name);
+  const year = String(new Date().getFullYear());
+  const joinDate = `${year}-01-01`;
+  const passwordHash = await bcrypt.hash(password, 10);
+  const department = dbRole === 'ADMIN' ? 'People Operations' : 'General Staff';
+  const jobPosition = dbRole === 'ADMIN' ? 'HR Officer' : 'Team Member';
+
+  let company;
+  if (dbRole === 'ADMIN') {
+    company = await Company.create({
+      name: `${name}'s Company`,
+      logoUrl: '',
+      code: 'OI',
+      joiningSerialByYear: { [year]: 0 },
+    });
+  } else {
+    company = await ensureDefaultCompany();
+  }
+
+  const user = await User.create({
+    companyId: company._id,
+    loginId: empCode,
+    email: emailNorm,
+    passwordHash,
+    role: dbRole,
+    mustChangePassword: false,
+    employeeId: null,
+  });
+
+  const employee = await Employee.create({
+    companyId: company._id,
+    userId: user._id,
+    firstName,
+    lastName,
+    email: emailNorm,
+    mobile: '',
+    jobPosition,
+    department,
+    dateOfJoining: joinDate,
+    privateInfo: { bank: { empCode } },
+    salary: { wage: 0, workingDaysPerWeek: 5, breakMinutes: 60, hoursPerDay: 8 },
+  });
+
+  user.employeeId = employee._id;
+  await user.save();
+
+  const me = await shapeMe(user, employee, company);
+  return {
+    token: signToken(user),
+    user: {
+      ...me,
+      fullName: name,
+      // Keep mongo id for API matching; also expose loginId as the form Employee ID
+      employeeId: me.employeeId,
+      loginId: empCode,
+      role: mapRoleToDisplay(dbRole),
+      department,
+    },
+    mustChangePassword: false,
+    message: 'Account created successfully',
+  };
+}
+
+async function login({ identifier, email, password }) {
+  const id = String(identifier || email || '').trim();
+  if (!id) {
+    throw new AppError('VALIDATION_ERROR', 'identifier or email is required', 400);
+  }
+
+  const user = await User.findOne({
+    $or: [{ email: id.toLowerCase() }, { loginId: id.toUpperCase() }],
+  });
+  if (!user) {
+    throw new AppError('UNAUTHORIZED', 'Invalid credentials', 401);
+  }
+
+  const ok = await bcrypt.compare(password, user.passwordHash);
+  if (!ok) {
+    throw new AppError('UNAUTHORIZED', 'Invalid credentials', 401);
+  }
+
+  const [employee, company] = await Promise.all([
+    user.employeeId
+      ? Employee.findById(user.employeeId)
+          .select('firstName lastName avatarUrl department')
+          .lean()
+      : null,
+    Company.findById(user.companyId).select('name').lean(),
+  ]);
+
+  const me = await shapeMe(user, employee, company);
+  const fullName = employee
+    ? `${employee.firstName} ${employee.lastName}`.trim()
+    : user.loginId;
+
+  return {
+    token: signToken(user),
+    user: {
+      ...me,
+      fullName,
+      role: mapRoleToDisplay(user.role),
+      department:
+        employee?.department ||
+        (user.role === 'ADMIN' ? 'People Operations' : 'General Staff'),
+    },
+    mustChangePassword: Boolean(user.mustChangePassword),
+  };
+}
+
 module.exports = {
   registerCompany,
+  signup,
   login,
   changePassword,
   getMe,
   signToken,
+  mapRoleToDb,
+  mapRoleToDisplay,
 };

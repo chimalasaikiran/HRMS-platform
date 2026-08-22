@@ -35,7 +35,7 @@ async function listEmployees(userCtx, { search } = {}) {
   }
 
   const employees = await Employee.find(filter)
-    .select('firstName lastName jobPosition avatarUrl')
+    .select('firstName lastName jobPosition department email mobile avatarUrl dateOfJoining')
     .sort({ firstName: 1, lastName: 1 })
     .lean();
 
@@ -79,7 +79,11 @@ async function listEmployees(userCtx, { search } = {}) {
     return {
       id,
       name: `${emp.firstName} ${emp.lastName}`.trim(),
-      jobPosition: emp.jobPosition,
+      jobPosition: emp.jobPosition || '',
+      department: emp.department || '',
+      email: emp.email || '',
+      mobile: emp.mobile || '',
+      dateOfJoining: emp.dateOfJoining || '',
       avatarUrl: emp.avatarUrl || '',
       status,
     };
