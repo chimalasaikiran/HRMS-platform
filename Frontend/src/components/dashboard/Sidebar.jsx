@@ -23,11 +23,10 @@ export const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
     currentUser?.role === 'Employee' ? 'Employee Portal' : 'People team'
   );
 
-  const isEmployee = currentUser?.role === 'Employee';
+  const isEmployee = currentUser?.role === 'EMPLOYEE';
 
-  // Count pending leaves for badge
   const pendingCount = leaveRequests.filter(
-    (l) => isEmployee ? (l.employeeId === currentUser?.employeeId && l.status === 'Pending') : l.status === 'Pending'
+    (l) => isEmployee ? (l.employeeId === currentUser?.id || l.loginId === currentUser?.loginId) && l.status === 'PENDING' : l.status === 'PENDING'
   ).length;
 
   const handleSignOut = () => {
@@ -46,10 +45,10 @@ export const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
       badge: pendingCount > 0 ? String(pendingCount) : null
     },
     { id: 'payroll', label: isEmployee ? 'My Payroll' : 'Payroll', icon: CreditCard, category: 'WORKSPACE' },
+    { id: 'assistant', label: 'Dayflow AI Assistant', icon: Shield, category: 'PERSONAL' },
     { id: 'profile', label: 'My Profile', icon: User, category: 'PERSONAL' }
   ];
 
-  // Filter items based on user role
   const visibleItems = navItems.filter((item) => !item.adminOnly || !isEmployee);
   const workspaceNav = visibleItems.filter((item) => item.category === 'WORKSPACE');
   const personalNav = visibleItems.filter((item) => item.category === 'PERSONAL');

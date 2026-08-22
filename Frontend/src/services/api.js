@@ -1,11 +1,27 @@
 // API service configuration and client with failover support
 
 const API_ENDPOINTS = [
+  import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   import.meta.env.VITE_API_URL_PRIMARY || 'https://hrms-platform-monh.onrender.com/api',
   import.meta.env.VITE_API_URL_SECONDARY || 'https://hrms-platform-monh.onrender.com/'
 ];
 
 let workingBaseUrl = null;
+
+function getAuthHeader() {
+  const session = localStorage.getItem('dayflow_session');
+  if (session) {
+    try {
+      const parsed = JSON.parse(session);
+      if (parsed?.token) {
+        return { Authorization: `Bearer ${parsed.token}` };
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+  return {};
+}
 
 /**
  * Helper to fetch with timeout
@@ -32,10 +48,10 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 5000) {
 export async function sendApiRequest(endpointPath, options = {}) {
   const headers = {
     'Content-Type': 'application/json',
+    ...getAuthHeader(),
     ...(options.headers || {})
   };
 
-  // List of endpoints to try: working endpoint first, then remaining endpoints
   const endpointsToTry = workingBaseUrl
     ? [workingBaseUrl, ...API_ENDPOINTS.filter((url) => url !== workingBaseUrl)]
     : API_ENDPOINTS;
@@ -54,10 +70,9 @@ export async function sendApiRequest(endpointPath, options = {}) {
           ...options,
           headers
         },
-        6000
+        5000
       );
 
-      // If we got a network response (even HTTP 4xx or 5xx), the server is reachable!
       workingBaseUrl = baseUrl;
 
       let responseData = {};
@@ -70,7 +85,8 @@ export async function sendApiRequest(endpointPath, options = {}) {
       }
 
       if (!response.ok) {
-        const err = new Error(responseData.message || responseData.error || `HTTP ${response.status}: Request failed`);
+        const errMessage = responseData?.error?.message || responseData?.message || `HTTP ${response.status}`;
+        const err = new Error(errMessage);
         err.status = response.status;
         err.data = responseData;
         throw err;
@@ -82,93 +98,127 @@ export async function sendApiRequest(endpointPath, options = {}) {
         status: response.status
       };
     } catch (err) {
-      // If it's an HTTP response error thrown above, don't failover to next IP unless it's 502/503/504
       if (err.status && err.status < 500) {
         throw err;
       }
-
-      console.warn(`[API] Failed connecting to ${fullUrl}:`, err.message || err);
       lastError = err;
     }
   }
 
   throw new Error(
-    lastError?.message ||
-    `Unable to connect to backend server at ${API_ENDPOINTS.join(' or ')}. Please check network connection.`
+    lastError?.message || `Unable to connect to server at ${API_ENDPOINTS[0]}`
   );
 }
 
-/**
- * Test server connectivity
- */
 export async function checkServerStatus() {
   for (const url of API_ENDPOINTS) {
     const cleanBaseUrl = url.replace(/\/$/, '');
     try {
-      const res = await fetchWithTimeout(`${cleanBaseUrl}/health`, { method: 'GET' }, 3000)
-        .catch(() => fetchWithTimeout(`${cleanBaseUrl}`, { method: 'GET' }, 3000));
-      if (res) {
+      const res = await fetchWithTimeout(`${cleanBaseUrl}/health`, { method: 'GET' }, 2000);
+      if (res.ok) {
         workingBaseUrl = url;
         return { online: true, activeUrl: cleanBaseUrl };
       }
-    } catch (e) {
-      // continue to next URL
-    }
+    } catch (e) {}
   }
   return { online: false, activeUrl: API_ENDPOINTS[0] };
 }
 
-/**
- * Authentication API methods
- */
 export const authApi = {
-  login: async (payload) => {
-    // Send form data (email, password, role) to backend API
-    try {
-      return await sendApiRequest('/login', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-    } catch (err) {
-      // Try alternate endpoint /auth/login if /login returns 404
-      if (err.status === 404) {
-        return await sendApiRequest('/auth/login', {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-      }
-      throw err;
-    }
-  },
-
-  signup: async (payload) => {
-    // Send all filled form fields (employeeId, email, password, fullName, role)
-    try {
-      return await sendApiRequest('/signup', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-    } catch (err) {
-      if (err.status === 404) {
-        try {
-          return await sendApiRequest('/register', {
-            method: 'POST',
-            body: JSON.stringify(payload)
-          });
-        } catch (err2) {
-          if (err2.status === 404) {
-            return await sendApiRequest('/auth/register', {
-              method: 'POST',
-              body: JSON.stringify(payload)
-            });
-          }
-          throw err2;
-        }
-      }
-      throw err;
-    }
-  }
+  login: (payload) =>
+    sendApiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }),
+  registerCompany: (payload) =>
+    sendApiRequest('/auth/register-company', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }),
+  changePassword: (payload) =>
+    sendApiRequest('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }),
+  getMe: () => sendApiRequest('/auth/me', { method: 'GET' })
 };
 
-export const getActiveBaseUrl = () => workingBaseUrl || API_ENDPOINTS[0];
+export const employeesApi = {
+  getAll: (search = '') =>
+    sendApiRequest(`/employees${search ? `?search=${encodeURIComponent(search)}` : ''}`, {
+      method: 'GET'
+    }),
+  create: (payload) =>
+    sendApiRequest('/employees', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }),
+  getById: (id) => sendApiRequest(`/employees/${id}`, { method: 'GET' }),
+  update: (id, payload) =>
+    sendApiRequest(`/employees/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload)
+    }),
+  getSalary: (id) => sendApiRequest(`/employees/${id}/salary`, { method: 'GET' }),
+  updateSalary: (id, payload) =>
+    sendApiRequest(`/employees/${id}/salary`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    })
+};
+
+export const attendanceApi = {
+  checkIn: () => sendApiRequest('/attendance/check-in', { method: 'POST' }),
+  checkOut: () => sendApiRequest('/attendance/check-out', { method: 'POST' }),
+  getMine: (month) =>
+    sendApiRequest(`/attendance/me${month ? `?month=${month}` : ''}`, { method: 'GET' }),
+  getMySummary: (month) =>
+    sendApiRequest(`/attendance/me/summary${month ? `?month=${month}` : ''}`, { method: 'GET' }),
+  getAdminDayView: (date) =>
+    sendApiRequest(`/attendance${date ? `?date=${date}` : ''}`, { method: 'GET' })
+};
+
+export const timeoffApi = {
+  getAllocations: () => sendApiRequest('/timeoff/allocations/me', { method: 'GET' }),
+  getMine: () => sendApiRequest('/timeoff/me', { method: 'GET' }),
+  getAdminList: (status = 'PENDING') =>
+    sendApiRequest(`/timeoff?status=${status}`, { method: 'GET' }),
+  create: (payload) =>
+    sendApiRequest('/timeoff', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    }),
+  approve: (id, comment) =>
+    sendApiRequest(`/timeoff/${id}/approve`, {
+      method: 'PATCH',
+      body: JSON.stringify({ comment })
+    }),
+  reject: (id, comment) =>
+    sendApiRequest(`/timeoff/${id}/reject`, {
+      method: 'PATCH',
+      body: JSON.stringify({ comment })
+    })
+};
+
+export const payrollApi = {
+  getMine: () => sendApiRequest('/payroll/me', { method: 'GET' }),
+  getEmployeePayroll: (id) => sendApiRequest(`/payroll/${id}`, { method: 'GET' })
+};
+
 export const getConfiguredEndpoints = () => API_ENDPOINTS;
+
+export const getActiveBaseUrl = () => workingBaseUrl || API_ENDPOINTS[0];
+
+export const aiApi = {
+  chat: (messages) =>
+    sendApiRequest('/ai/chat', {
+      method: 'POST',
+      body: JSON.stringify({ messages })
+    }),
+  query: (payload) =>
+    sendApiRequest('/ai/query', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    })
+};
+

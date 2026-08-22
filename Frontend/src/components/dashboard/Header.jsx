@@ -5,7 +5,7 @@ import { useHrms } from '../../context/HrmsContext';
 
 export const Header = ({ onOpenSidebar, onNavigate }) => {
   const { currentUser, logout } = useAuth();
-  const { activities } = useHrms();
+  const { activities, checkInState, checkIn, checkOut } = useHrms();
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
@@ -43,8 +43,38 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
         </div>
       </div>
 
-      {/* Right side: Notifications & User Profile Menu */}
-      <div className="flex items-center gap-4">
+      {/* Right side: Systray, Notifications & User Profile Menu */}
+      <div className="flex items-center gap-3 sm:gap-4">
+        {/* Check In / Check Out Systray Button */}
+        <div className="flex items-center gap-2 bg-[#faf6f0] border border-[#e8e2d5] rounded-full px-3 py-1 text-xs">
+          {checkInState?.isCheckedIn ? (
+            <>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-slate-600 hidden sm:inline text-[11px] font-medium">
+                Since {checkInState.checkInTime || '09:30 AM'}
+              </span>
+              <button
+                type="button"
+                onClick={() => checkOut(currentUser)}
+                className="font-bold text-red-600 hover:text-red-700 cursor-pointer ml-1 text-xs transition-colors"
+              >
+                Check Out &rarr;
+              </button>
+            </>
+          ) : (
+            <>
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+              <button
+                type="button"
+                onClick={() => checkIn(currentUser)}
+                className="font-bold text-[#1c3541] hover:text-[#28495a] cursor-pointer text-xs transition-colors"
+              >
+                Check IN &rarr;
+              </button>
+            </>
+          )}
+        </div>
+
         {/* Notifications Dropdown */}
         <div className="relative">
           <button
@@ -88,6 +118,7 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
         </div>
 
         <div className="h-5 w-px bg-[#e8e2d5]" />
+
 
         {/* User Profile Pill & Dropdown */}
         <div className="relative">

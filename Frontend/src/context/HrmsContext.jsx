@@ -1,92 +1,179 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { employeesApi, attendanceApi, timeoffApi } from '../services/api';
 
 const HrmsContext = createContext();
 
+export function computeSalary(wageNum) {
+  const wage = Number(wageNum) || 0;
+  const basic = Math.round(wage * 0.50 * 100) / 100;
+  const hra = Math.round(basic * 0.50 * 100) / 100;
+  const std = 4167;
+  const bonus = Math.round(basic * 0.0833 * 100) / 100;
+  const lta = Math.round(basic * 0.0833 * 100) / 100;
+  const fixed = Math.round((wage - (basic + hra + std + bonus + lta)) * 100) / 100;
+
+  const pfEmployee = Math.round(basic * 0.12 * 100) / 100;
+  const pfEmployer = Math.round(basic * 0.12 * 100) / 100;
+  const ptax = 200;
+
+  const gross = wage;
+  const netPay = Math.round((gross - pfEmployee - ptax) * 100) / 100;
+
+  return {
+    wage,
+    workingDaysPerWeek: 5,
+    breakMinutes: 60,
+    hoursPerDay: 8,
+    earnings: [
+      { key: 'BASIC', label: 'Basic Salary', amount: basic, percent: 50.00 },
+      { key: 'HRA', label: 'House Rent Allowance', amount: hra, percent: 50.00 },
+      { key: 'STD', label: 'Standard Allowance', amount: std, percent: basic ? Math.round((std / basic) * 10000) / 100 : 16.67 },
+      { key: 'BONUS', label: 'Performance Bonus', amount: bonus, percent: 8.33 },
+      { key: 'LTA', label: 'Leave Travel Allowance', amount: lta, percent: 8.33 },
+      { key: 'FIXED', label: 'Fixed Allowance', amount: fixed, percent: basic ? Math.round((fixed / basic) * 10000) / 100 : 16.67 }
+    ],
+    deductions: [
+      { key: 'PF_EMPLOYEE', label: 'PF — employee', amount: pfEmployee, percent: 12.00 },
+      { key: 'PF_EMPLOYER', label: 'PF — employer', amount: pfEmployer, percent: 12.00 },
+      { key: 'PTAX', label: 'Professional Tax', amount: ptax }
+    ],
+    gross,
+    netPay
+  };
+}
+
 const INITIAL_EMPLOYEES = [
   {
-    employeeId: 'HR-2025-01',
-    fullName: 'Maya Chen',
-    email: 'maya.chen@dayflow.work',
-    role: 'HR / People team',
-    department: 'People Operations',
-    jobTitle: 'HR Director',
-    phone: '+1 (555) 876-5432',
-    address: '100 Park Avenue, New York, NY',
-    joinedDate: 'Jan 2024',
-    status: 'Active',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200',
-    basicSalary: 110000,
-    hra: 35000,
-    allowances: 15000,
-    deductions: 12000,
-    documents: [
-      { name: 'Government_ID.pdf', date: 'Jan 15, 2024', size: '1.2 MB' },
-      { name: 'Employment_Contract.pdf', date: 'Jan 15, 2024', size: '2.4 MB' },
-      { name: 'July_2025_Payslip.pdf', date: 'Aug 01, 2025', size: '340 KB' }
-    ]
+    id: 'emp-1',
+    loginId: 'OIHAAD20220001',
+    name: 'Hari Admin',
+    fullName: 'Hari Admin',
+    email: 'hr@dayflow.com',
+    role: 'ADMIN',
+    department: 'Human Resources',
+    jobPosition: 'HR Officer',
+    mobile: '+91 9876500001',
+    company: 'Odoo India',
+    location: 'Gandhinagar',
+    status: 'PRESENT',
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200',
+    resume: {
+      about: 'Managing HR Operations and AI Integration',
+      loveAboutJob: 'Helping people grow',
+      interests: 'Reading, Chess',
+      skills: ['HR Strategy', 'Leadership'],
+      certifications: ['SHRM Certified']
+    },
+    privateInfo: {
+      dateOfBirth: '1990-05-15',
+      nationality: 'Indian',
+      personalEmail: 'hari.personal@gmail.com',
+      maritalStatus: 'Married',
+      gender: 'Male',
+      residingAddress: '100 Park Ave, Gandhinagar',
+      dateOfJoining: '2022-01-15',
+      bank: { accountNumber: '9876543210', bankName: 'HDFC Bank', ifsc: 'HDFC0001234', pan: 'ABCDE1234F', uan: '100000000000', empCode: 'OIHAAD20220001' }
+    },
+    salary: { wage: 80000, workingDaysPerWeek: 5, breakMinutes: 60, hoursPerDay: 8 }
   },
   {
-    employeeId: 'EMP-2025-88',
-    fullName: 'Alex Morgan',
-    email: 'alex.morgan@dayflow.work',
-    role: 'Employee',
+    id: 'emp-2',
+    loginId: 'OIJODO20220001',
+    name: 'John Doe',
+    fullName: 'John Doe',
+    email: 'john.doe@dayflow.com',
+    role: 'EMPLOYEE',
     department: 'Engineering',
-    jobTitle: 'Senior Frontend Engineer',
-    phone: '+1 (555) 234-5678',
-    address: '742 Evergreen Terrace, Springfield',
-    joinedDate: 'Mar 2024',
-    status: 'Active',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-    basicSalary: 85000,
-    hra: 25000,
-    allowances: 10000,
-    deductions: 8000,
-    documents: [
-      { name: 'Passport_Scan.pdf', date: 'Mar 01, 2024', size: '1.8 MB' },
-      { name: 'Offer_Letter.pdf', date: 'Mar 01, 2024', size: '1.1 MB' },
-      { name: 'July_2025_Payslip.pdf', date: 'Aug 01, 2025', size: '310 KB' }
-    ]
+    jobPosition: 'Backend Developer',
+    mobile: '+91 9876500002',
+    company: 'Odoo India',
+    location: 'Gandhinagar',
+    status: 'PRESENT',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+    resume: {
+      about: 'Backend systems architecture and API design',
+      loveAboutJob: 'Solving complex algorithms',
+      interests: 'Open source, gaming',
+      skills: ['Node.js', 'Express', 'MongoDB'],
+      certifications: ['AWS Developer']
+    },
+    privateInfo: {
+      dateOfBirth: '1995-08-20',
+      nationality: 'Indian',
+      personalEmail: 'john.doe.personal@gmail.com',
+      maritalStatus: 'Single',
+      gender: 'Male',
+      residingAddress: '742 Evergreen Terr, Gandhinagar',
+      dateOfJoining: '2022-03-01',
+      bank: { accountNumber: '1234567890', bankName: 'ICICI Bank', ifsc: 'ICIC0005678', pan: 'FGHIJ5678K', uan: '100000000001', empCode: 'OIJODO20220001' }
+    },
+    salary: { wage: 50000, workingDaysPerWeek: 5, breakMinutes: 60, hoursPerDay: 8 }
   },
   {
-    employeeId: 'EMP-2025-42',
-    fullName: 'Priya Sharma',
-    email: 'priya.sharma@dayflow.work',
-    role: 'Employee',
-    department: 'Design',
-    jobTitle: 'Lead UI/UX Designer',
-    phone: '+1 (555) 345-6789',
-    address: '12 Market St, San Francisco, CA',
-    joinedDate: 'Feb 2024',
-    status: 'Active',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200',
-    basicSalary: 90000,
-    hra: 28000,
-    allowances: 12000,
-    deductions: 9000,
-    documents: [
-      { name: 'ID_Card_Copy.pdf', date: 'Feb 10, 2024', size: '950 KB' },
-      { name: 'Tax_Declaration_Form.pdf', date: 'Apr 05, 2024', size: '820 KB' }
-    ]
+    id: 'emp-3',
+    loginId: 'OIPRSH20220002',
+    name: 'Priya Shah',
+    fullName: 'Priya Shah',
+    email: 'priya.shah@dayflow.com',
+    role: 'EMPLOYEE',
+    department: 'Engineering',
+    jobPosition: 'Frontend Developer',
+    mobile: '+91 9876500003',
+    company: 'Odoo India',
+    location: 'Gandhinagar',
+    status: 'ON_LEAVE',
+    avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200',
+    resume: {
+      about: 'UI engineer passionate about accessible interfaces',
+      loveAboutJob: 'Crafting responsive designs',
+      interests: 'Digital painting, travel',
+      skills: ['React', 'Tailwind CSS', 'TypeScript'],
+      certifications: ['Meta Frontend Professional']
+    },
+    privateInfo: {
+      dateOfBirth: '1997-11-12',
+      nationality: 'Indian',
+      personalEmail: 'priya.shah.personal@gmail.com',
+      maritalStatus: 'Single',
+      gender: 'Female',
+      residingAddress: '12 Market St, Gandhinagar',
+      dateOfJoining: '2022-04-10',
+      bank: { accountNumber: '5554443332', bankName: 'Axis Bank', ifsc: 'UTIB0009999', pan: 'LMNOP9999Q', uan: '100000000002', empCode: 'OIPRSH20220002' }
+    },
+    salary: { wage: 48000, workingDaysPerWeek: 5, breakMinutes: 60, hoursPerDay: 8 }
   },
   {
-    employeeId: 'EMP-2025-19',
-    fullName: 'David Kim',
-    email: 'david.kim@dayflow.work',
-    role: 'Employee',
-    department: 'Product',
-    jobTitle: 'Senior Product Manager',
-    phone: '+1 (555) 456-7890',
-    address: '458 Pine St, Seattle, WA',
-    joinedDate: 'Nov 2023',
-    status: 'Active',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
-    basicSalary: 105000,
-    hra: 32000,
-    allowances: 14000,
-    deductions: 11000,
-    documents: [
-      { name: 'Employee_Agreement.pdf', date: 'Nov 01, 2023', size: '2.1 MB' }
-    ]
+    id: 'emp-4',
+    loginId: 'OIAMPA20220003',
+    name: 'Amit Patel',
+    fullName: 'Amit Patel',
+    email: 'amit.patel@dayflow.com',
+    role: 'EMPLOYEE',
+    department: 'Finance',
+    jobPosition: 'Accounts Manager',
+    mobile: '+91 9876500004',
+    company: 'Odoo India',
+    location: 'Gandhinagar',
+    status: 'ABSENT',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    resume: {
+      about: 'Financial compliance and payroll management',
+      loveAboutJob: 'Numbers and tax strategy',
+      interests: 'Investing, cycling',
+      skills: ['Accounting', 'Financial Analysis'],
+      certifications: ['CA Certified']
+    },
+    privateInfo: {
+      dateOfBirth: '1988-02-14',
+      nationality: 'Indian',
+      personalEmail: 'amit.patel@gmail.com',
+      maritalStatus: 'Married',
+      gender: 'Male',
+      residingAddress: '45 Pine St, Gandhinagar',
+      dateOfJoining: '2022-02-20',
+      bank: { accountNumber: '8887776665', bankName: 'SBI', ifsc: 'SBIN0001111', pan: 'RSTUV1111W', uan: '100000000003', empCode: 'OIAMPA20220003' }
+    },
+    salary: { wage: 55000, workingDaysPerWeek: 5, breakMinutes: 60, hoursPerDay: 8 }
   }
 ];
 
@@ -95,144 +182,75 @@ const TODAY_DATE = new Date().toISOString().split('T')[0];
 const INITIAL_ATTENDANCE = [
   {
     id: 'att-1',
-    employeeId: 'EMP-2025-88',
-    employeeName: 'Alex Morgan',
-    department: 'Engineering',
+    employeeId: 'emp-2',
+    loginId: 'OIJODO20220001',
+    employeeName: 'John Doe',
     date: TODAY_DATE,
-    checkIn: '09:02 AM',
+    checkIn: '09:30',
     checkOut: null,
     workHours: 'In progress',
-    status: 'Present'
+    status: 'PRESENT'
   },
   {
     id: 'att-2',
-    employeeId: 'HR-2025-01',
-    employeeName: 'Maya Chen',
-    department: 'People Operations',
+    employeeId: 'emp-1',
+    loginId: 'OIHAAD20220001',
+    employeeName: 'Hari Admin',
     date: TODAY_DATE,
-    checkIn: '08:55 AM',
+    checkIn: '09:15',
     checkOut: null,
     workHours: 'In progress',
-    status: 'Present'
-  },
-  {
-    id: 'att-3',
-    employeeId: 'EMP-2025-42',
-    employeeName: 'Priya Sharma',
-    department: 'Design',
-    date: TODAY_DATE,
-    checkIn: '09:30 AM',
-    checkOut: null,
-    workHours: 'In progress',
-    status: 'Present'
-  },
-  {
-    id: 'att-4',
-    employeeId: 'EMP-2025-19',
-    employeeName: 'David Kim',
-    department: 'Product',
-    date: TODAY_DATE,
-    checkIn: null,
-    checkOut: null,
-    workHours: '0h 0m',
-    status: 'Leave'
-  },
-  {
-    id: 'att-5',
-    employeeId: 'EMP-2025-88',
-    employeeName: 'Alex Morgan',
-    department: 'Engineering',
-    date: '2025-08-21',
-    checkIn: '09:00 AM',
-    checkOut: '05:30 PM',
-    workHours: '8h 30m',
-    status: 'Present'
-  },
-  {
-    id: 'att-6',
-    employeeId: 'EMP-2025-88',
-    employeeName: 'Alex Morgan',
-    department: 'Engineering',
-    date: '2025-08-20',
-    checkIn: null,
-    checkOut: null,
-    workHours: '0h 0m',
-    status: 'Leave'
+    status: 'PRESENT'
   }
 ];
 
 const INITIAL_LEAVES = [
   {
     id: 'L-101',
-    employeeId: 'EMP-2025-19',
-    employeeName: 'David Kim',
-    type: 'Paid',
-    startDate: '2025-08-22',
-    endDate: '2025-08-24',
-    duration: '3 Days',
-    reason: 'Attending product conference & family trip.',
-    status: 'Pending',
-    adminComment: '',
-    appliedOn: 'Aug 21, 2025'
+    employeeId: 'emp-2',
+    loginId: 'OIJODO20220001',
+    employeeName: 'John Doe',
+    type: 'SICK',
+    startDate: TODAY_DATE,
+    endDate: TODAY_DATE,
+    days: 1,
+    reason: 'Fever and medical consultation',
+    attachmentUrl: 'https://example.com/certificate.pdf',
+    status: 'PENDING',
+    reviewComment: '',
+    createdAt: new Date().toISOString()
   },
   {
     id: 'L-102',
-    employeeId: 'EMP-2025-88',
-    employeeName: 'Alex Morgan',
-    type: 'Sick',
+    employeeId: 'emp-3',
+    loginId: 'OIPRSH20220002',
+    employeeName: 'Priya Shah',
+    type: 'PAID',
     startDate: '2025-08-20',
-    endDate: '2025-08-20',
-    duration: '1 Day',
-    reason: 'High fever and medical doctor consultation.',
-    status: 'Approved',
-    adminComment: 'Get well soon Alex! Rest up.',
-    appliedOn: 'Aug 19, 2025'
-  },
-  {
-    id: 'L-103',
-    employeeId: 'EMP-2025-42',
-    employeeName: 'Priya Sharma',
-    type: 'Unpaid',
-    startDate: '2025-09-01',
-    endDate: '2025-09-02',
-    duration: '2 Days',
-    reason: 'Personal relocation work.',
-    status: 'Pending',
-    adminComment: '',
-    appliedOn: 'Aug 22, 2025'
+    endDate: '2025-08-21',
+    days: 2,
+    reason: 'Family event',
+    attachmentUrl: '',
+    status: 'APPROVED',
+    reviewComment: 'Approved by HR',
+    createdAt: '2025-08-19T10:00:00Z'
   }
 ];
 
 const INITIAL_ACTIVITIES = [
   {
     id: 1,
-    title: 'Clock-in Recorded',
-    desc: 'You checked in today at 09:02 AM on time.',
+    title: 'Check-In Recorded',
+    desc: 'You checked in today at 09:30 AM.',
     time: '2 hours ago',
     type: 'attendance',
-    forUser: 'EMP-2025-88'
+    forUser: 'OIJODO20220001'
   },
   {
     id: 2,
-    title: 'Leave Request Approved',
-    desc: 'HR approved your Sick Leave request for Aug 20, 2025.',
+    title: 'Time-Off Approved',
+    desc: 'HR approved Priya Shah paid time-off request.',
     time: 'Yesterday',
-    type: 'leave',
-    forUser: 'EMP-2025-88'
-  },
-  {
-    id: 3,
-    title: 'Payslip Released',
-    desc: 'July 2025 payslip has been posted and available for view.',
-    time: '3 days ago',
-    type: 'payroll',
-    forUser: 'all'
-  },
-  {
-    id: 4,
-    title: 'New Leave Request',
-    desc: 'David Kim submitted a 3-day Paid Leave request.',
-    time: '1 day ago',
     type: 'leave',
     forUser: 'admin'
   }
@@ -259,6 +277,11 @@ export const HrmsProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : INITIAL_ACTIVITIES;
   });
 
+  const [checkInState, setCheckInState] = useState({
+    isCheckedIn: true,
+    checkInTime: '09:30 AM'
+  });
+
   useEffect(() => {
     localStorage.setItem('hrms_employees', JSON.stringify(employees));
   }, [employees]);
@@ -275,241 +298,261 @@ export const HrmsProvider = ({ children }) => {
     localStorage.setItem('hrms_activities', JSON.stringify(activities));
   }, [activities]);
 
-  // Check-In function
-  const checkIn = (user) => {
-    if (!user) return;
+  // Sync with backend on load if backend is available
+  useEffect(() => {
+    async function loadBackendData() {
+      try {
+        const empRes = await employeesApi.getAll();
+        if (empRes.data && Array.isArray(empRes.data)) {
+          setEmployees(empRes.data.map(e => ({
+            ...e,
+            fullName: e.name || e.fullName || `${e.firstName || ''} ${e.lastName || ''}`.trim(),
+            avatar: e.avatarUrl || e.avatar
+          })));
+        }
+      } catch (err) {
+        // Fallback to local state
+      }
+    }
+    loadBackendData();
+  }, []);
+
+  const checkIn = async (user) => {
     const now = new Date();
     const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    setAttendanceLogs((prev) => {
-      const existingToday = prev.find(
-        (a) => a.employeeId === user.employeeId && a.date === TODAY_DATE
-      );
+    try {
+      await attendanceApi.checkIn();
+    } catch (err) {
+      console.warn('[HrmsContext] Offline checkIn fallback');
+    }
 
-      if (existingToday) {
-        return prev.map((a) =>
-          a.id === existingToday.id
-            ? { ...a, checkIn: timeString, status: 'Present', workHours: 'In progress' }
-            : a
-        );
-      }
+    setCheckInState({ isCheckedIn: true, checkInTime: timeString });
 
-      const newLog = {
+    setAttendanceLogs((prev) => [
+      {
         id: 'att-' + Date.now(),
-        employeeId: user.employeeId,
-        employeeName: user.fullName || user.email,
-        department: user.department || 'General',
+        employeeId: user?.id || 'emp-2',
+        loginId: user?.loginId || 'OIJODO20220001',
+        employeeName: user?.fullName || 'User',
         date: TODAY_DATE,
         checkIn: timeString,
         checkOut: null,
         workHours: 'In progress',
-        status: 'Present'
-      };
+        status: 'PRESENT'
+      },
+      ...prev
+    ]);
 
-      return [newLog, ...prev];
-    });
-
-    // Add activity alert
     setActivities((prev) => [
       {
         id: Date.now(),
-        title: 'Clock-in Recorded',
-        desc: `You checked in at ${timeString}. Have a great workday!`,
+        title: 'Check-In Completed',
+        desc: `Checked in at ${timeString}. Have a great day!`,
         time: 'Just now',
         type: 'attendance',
-        forUser: user.employeeId
+        forUser: user?.loginId || 'all'
       },
       ...prev
     ]);
   };
 
-  // Check-Out function
-  const checkOut = (user) => {
-    if (!user) return;
+  const checkOut = async (user) => {
     const now = new Date();
     const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+    try {
+      await attendanceApi.checkOut();
+    } catch (err) {
+      console.warn('[HrmsContext] Offline checkOut fallback');
+    }
+
+    setCheckInState({ isCheckedIn: false, checkInTime: null });
+
     setAttendanceLogs((prev) =>
-      prev.map((a) => {
-        if (a.employeeId === user.employeeId && a.date === TODAY_DATE) {
-          return {
-            ...a,
-            checkOut: timeString,
-            workHours: '8h 00m' // Simulated completed work shift
-          };
-        }
-        return a;
-      })
+      prev.map((a) => (a.date === TODAY_DATE ? { ...a, checkOut: timeString, workHours: '8h 00m' } : a))
     );
 
     setActivities((prev) => [
       {
         id: Date.now(),
-        title: 'Clock-out Recorded',
-        desc: `You checked out at ${timeString}. Total work hours recorded.`,
+        title: 'Check-Out Completed',
+        desc: `Checked out at ${timeString}. Work shift ended.`,
         time: 'Just now',
         type: 'attendance',
-        forUser: user.employeeId
+        forUser: user?.loginId || 'all'
       },
       ...prev
     ]);
   };
 
-  // Apply Leave function
-  const applyLeave = ({ employeeId, employeeName, type, startDate, endDate, duration, reason }) => {
-    const newId = 'L-' + Math.floor(100 + Math.random() * 900);
-    const newRequest = {
-      id: newId,
-      employeeId,
-      employeeName,
-      type: type || 'Paid',
-      startDate,
-      endDate,
-      duration: duration || '1 Day',
-      reason,
-      status: 'Pending',
-      adminComment: '',
-      appliedOn: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
-    };
+  const createEmployee = async (empForm) => {
+    try {
+      const res = await employeesApi.create(empForm);
+      const created = res.data?.employee || res.data;
+      const tempPassword = res.data?.tempPassword || 'Dayflow@123';
 
-    setLeaveRequests((prev) => [newRequest, ...prev]);
+      const newEmpItem = {
+        id: created.id || 'emp-' + Date.now(),
+        loginId: created.loginId || 'OIJODO2026' + Math.floor(1000 + Math.random() * 9000),
+        name: `${empForm.firstName} ${empForm.lastName}`,
+        fullName: `${empForm.firstName} ${empForm.lastName}`,
+        email: empForm.email,
+        jobPosition: empForm.jobPosition,
+        department: empForm.department,
+        location: empForm.location || 'Gandhinagar',
+        status: 'PRESENT',
+        role: 'EMPLOYEE',
+        avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(empForm.firstName)}`,
+        salary: { wage: 50000, workingDaysPerWeek: 5, breakMinutes: 60, hoursPerDay: 8 },
+        privateInfo: {
+          residingAddress: empForm.location || 'Gandhinagar',
+          dateOfJoining: empForm.dateOfJoining || TODAY_DATE,
+          bank: { accountNumber: '', bankName: '', ifsc: '', pan: '', uan: '', empCode: created.loginId }
+        },
+        resume: { about: '', loveAboutJob: '', interests: '', skills: [], certifications: [] }
+      };
 
-    // Add notification alerts
-    setActivities((prev) => [
-      {
-        id: Date.now(),
-        title: 'Leave Request Submitted',
-        desc: `Your ${type} leave request (${startDate} to ${endDate}) is under HR review.`,
-        time: 'Just now',
-        type: 'leave',
-        forUser: employeeId
-      },
-      {
-        id: Date.now() + 1,
-        title: 'New Pending Leave Request',
-        desc: `${employeeName} requested ${type} leave (${duration}).`,
-        time: 'Just now',
-        type: 'leave',
-        forUser: 'admin'
-      },
-      ...prev
-    ]);
+      setEmployees((prev) => [newEmpItem, ...prev]);
+
+      return {
+        employee: newEmpItem,
+        loginId: newEmpItem.loginId,
+        tempPassword
+      };
+    } catch (err) {
+      if (err.status) throw err;
+
+      // Local fallback creation
+      const genLoginId = 'OI' + empForm.firstName.slice(0, 2).toUpperCase() + empForm.lastName.slice(0, 2).toUpperCase() + '202600' + Math.floor(10 + Math.random() * 89);
+      const newEmpItem = {
+        id: 'emp-' + Date.now(),
+        loginId: genLoginId,
+        name: `${empForm.firstName} ${empForm.lastName}`,
+        fullName: `${empForm.firstName} ${empForm.lastName}`,
+        email: empForm.email,
+        jobPosition: empForm.jobPosition,
+        department: empForm.department,
+        location: empForm.location || 'Gandhinagar',
+        status: 'PRESENT',
+        role: 'EMPLOYEE',
+        avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(empForm.firstName)}`,
+        salary: { wage: 50000, workingDaysPerWeek: 5, breakMinutes: 60, hoursPerDay: 8 },
+        privateInfo: {
+          residingAddress: empForm.location || 'Gandhinagar',
+          dateOfJoining: empForm.dateOfJoining || TODAY_DATE,
+          bank: { accountNumber: '', bankName: '', ifsc: '', pan: '', uan: '', empCode: genLoginId }
+        },
+        resume: { about: '', loveAboutJob: '', interests: '', skills: [], certifications: [] }
+      };
+
+      setEmployees((prev) => [newEmpItem, ...prev]);
+      return {
+        employee: newEmpItem,
+        loginId: genLoginId,
+        tempPassword: 'Dayflow@123'
+      };
+    }
   };
 
-  // Approve Leave function
-  const approveLeave = (leaveId, adminComment = '') => {
-    setLeaveRequests((prev) =>
-      prev.map((req) => {
-        if (req.id === leaveId) {
-          const updated = { ...req, status: 'Approved', adminComment };
+  const updateEmployeeProfile = async (empId, updateData, isSelfEdit = false) => {
+    try {
+      await employeesApi.update(empId, updateData);
+    } catch (err) {
+      console.warn('[HrmsContext] Offline update fallthrough');
+    }
 
-          // Notify employee
-          setActivities((aPrev) => [
-            {
-              id: Date.now(),
-              title: 'Leave Request Approved',
-              desc: `Your ${req.type} leave request has been APPROVED by HR.${adminComment ? ` Note: "${adminComment}"` : ''}`,
-              time: 'Just now',
-              type: 'leave',
-              forUser: req.employeeId
-            },
-            ...aPrev
-          ]);
-
-          return updated;
-        }
-        return req;
-      })
-    );
-  };
-
-  // Reject Leave function
-  const rejectLeave = (leaveId, adminComment = '') => {
-    setLeaveRequests((prev) =>
-      prev.map((req) => {
-        if (req.id === leaveId) {
-          const updated = { ...req, status: 'Rejected', adminComment };
-
-          // Notify employee
-          setActivities((aPrev) => [
-            {
-              id: Date.now(),
-              title: 'Leave Request Update',
-              desc: `Your ${req.type} leave request was REJECTED by HR.${adminComment ? ` Reason: "${adminComment}"` : ''}`,
-              time: 'Just now',
-              type: 'leave',
-              forUser: req.employeeId
-            },
-            ...aPrev
-          ]);
-
-          return updated;
-        }
-        return req;
-      })
-    );
-  };
-
-  // Update Employee Profile
-  const updateEmployeeProfile = (employeeId, updatedData, isSelfEdit = false) => {
     setEmployees((prev) =>
       prev.map((emp) => {
-        if (emp.employeeId === employeeId) {
-          if (isSelfEdit) {
-            // Limited edit for employees: address, phone, avatar
-            return {
-              ...emp,
-              phone: updatedData.phone !== undefined ? updatedData.phone : emp.phone,
-              address: updatedData.address !== undefined ? updatedData.address : emp.address,
-              avatar: updatedData.avatar !== undefined ? updatedData.avatar : emp.avatar
-            };
-          } else {
-            // Full edit for Admin
-            return {
-              ...emp,
-              ...updatedData
-            };
-          }
-        }
-        return emp;
-      })
-    );
-  };
-
-  // Update Salary Structure (Admin action)
-  const updateSalaryStructure = (employeeId, salaryData) => {
-    setEmployees((prev) =>
-      prev.map((emp) => {
-        if (emp.employeeId === employeeId) {
+        if (emp.id === empId || emp.loginId === empId) {
           return {
             ...emp,
-            basicSalary: Number(salaryData.basicSalary) || emp.basicSalary,
-            hra: Number(salaryData.hra) || emp.hra,
-            allowances: Number(salaryData.allowances) || emp.allowances,
-            deductions: Number(salaryData.deductions) || emp.deductions
+            ...updateData,
+            name: updateData.name || updateData.fullName || emp.name,
+            fullName: updateData.fullName || updateData.name || emp.fullName
           };
         }
         return emp;
       })
     );
-
-    setActivities((prev) => [
-      {
-        id: Date.now(),
-        title: 'Salary Structure Updated',
-        desc: `Salary structure updated for employee ID: ${employeeId}.`,
-        time: 'Just now',
-        type: 'payroll',
-        forUser: 'admin'
-      },
-      ...prev
-    ]);
   };
 
-  // Update Attendance Status manually (Admin action)
-  const updateAttendanceStatus = (recordId, newStatus) => {
-    setAttendanceLogs((prev) =>
-      prev.map((log) => (log.id === recordId ? { ...log, status: newStatus } : log))
+  const updateSalaryStructure = async (empId, wageNum) => {
+    const wage = Number(wageNum) || 0;
+    try {
+      await employeesApi.updateSalary(empId, { wage });
+    } catch (err) {
+      console.warn('[HrmsContext] Offline salary update fallthrough');
+    }
+
+    setEmployees((prev) =>
+      prev.map((emp) => {
+        if (emp.id === empId || emp.loginId === empId) {
+          return {
+            ...emp,
+            salary: { ...(emp.salary || {}), wage }
+          };
+        }
+        return emp;
+      })
+    );
+  };
+
+  const applyLeave = async (reqData) => {
+    const payload = {
+      type: reqData.type || 'SICK',
+      startDate: reqData.startDate,
+      endDate: reqData.endDate,
+      days: reqData.days || 1,
+      reason: reqData.reason || '',
+      attachmentUrl: reqData.attachmentUrl || ''
+    };
+
+    try {
+      await timeoffApi.create(payload);
+    } catch (err) {
+      console.warn('[HrmsContext] Offline applyLeave fallthrough');
+    }
+
+    const newReq = {
+      id: 'L-' + Math.floor(100 + Math.random() * 900),
+      employeeId: reqData.employeeId || 'emp-2',
+      loginId: reqData.loginId || 'OIJODO20220001',
+      employeeName: reqData.employeeName || 'John Doe',
+      type: payload.type,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      days: payload.days,
+      reason: payload.reason,
+      attachmentUrl: payload.attachmentUrl,
+      status: 'PENDING',
+      createdAt: new Date().toISOString()
+    };
+
+    setLeaveRequests((prev) => [newReq, ...prev]);
+  };
+
+  const approveLeave = async (leaveId, comment = '') => {
+    try {
+      await timeoffApi.approve(leaveId, comment);
+    } catch (err) {
+      console.warn('[HrmsContext] Offline approveLeave fallthrough');
+    }
+
+    setLeaveRequests((prev) =>
+      prev.map((l) => (l.id === leaveId ? { ...l, status: 'APPROVED', reviewComment: comment } : l))
+    );
+  };
+
+  const rejectLeave = async (leaveId, comment = '') => {
+    try {
+      await timeoffApi.reject(leaveId, comment);
+    } catch (err) {
+      console.warn('[HrmsContext] Offline rejectLeave fallthrough');
+    }
+
+    setLeaveRequests((prev) =>
+      prev.map((l) => (l.id === leaveId ? { ...l, status: 'REJECTED', reviewComment: comment } : l))
     );
   };
 
@@ -521,14 +564,16 @@ export const HrmsProvider = ({ children }) => {
         leaveRequests,
         activities,
         todayDate: TODAY_DATE,
+        checkInState,
         checkIn,
         checkOut,
+        createEmployee,
+        updateEmployeeProfile,
+        updateSalaryStructure,
         applyLeave,
         approveLeave,
         rejectLeave,
-        updateEmployeeProfile,
-        updateSalaryStructure,
-        updateAttendanceStatus
+        computeSalary
       }}
     >
       {children}
@@ -543,3 +588,4 @@ export const useHrms = () => {
   }
   return context;
 };
+

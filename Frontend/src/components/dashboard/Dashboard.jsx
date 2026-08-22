@@ -15,6 +15,7 @@ import { AttendanceView } from './views/AttendanceView';
 import { LeaveView } from './views/LeaveView';
 import { PayrollView } from './views/PayrollView';
 import { ProfileView } from './views/ProfileView';
+import { AiAssistantPanel } from '../ai/AiAssistantPanel';
 
 export const Dashboard = () => {
   const { currentUser } = useAuth();
@@ -71,6 +72,7 @@ export const Dashboard = () => {
           {activeTab === 'leave' && <LeaveView />}
           {activeTab === 'payroll' && <PayrollView />}
           {activeTab === 'profile' && <ProfileView />}
+          {activeTab === 'ai' && <AiAssistantPanel />}
         </main>
       </div>
     </div>

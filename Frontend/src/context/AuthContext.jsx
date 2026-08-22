@@ -5,23 +5,23 @@ const AuthContext = createContext();
 
 const INITIAL_DEMO_USERS = [
   {
-    employeeId: 'HR-2025-01',
-    email: 'maya.chen@dayflow.work',
-    password: 'password123',
-    fullName: 'Maya Chen',
-    role: 'HR / People team',
-    department: 'People Operations',
-    joinedDate: 'Jan 2024',
+    loginId: 'OIHAAD20220001',
+    email: 'hr@dayflow.com',
+    password: 'Dayflow@123',
+    fullName: 'Hari Admin',
+    role: 'ADMIN',
+    department: 'Human Resources',
+    joinedDate: 'Jan 2022',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200'
   },
   {
-    employeeId: 'EMP-2025-88',
-    email: 'alex.morgan@dayflow.work',
-    password: 'password123',
-    fullName: 'Alex Morgan',
-    role: 'Employee',
+    loginId: 'OIJODO20220001',
+    email: 'john.doe@dayflow.com',
+    password: 'Dayflow@123',
+    fullName: 'John Doe',
+    role: 'EMPLOYEE',
     department: 'Engineering',
-    joinedDate: 'Mar 2024',
+    joinedDate: 'Mar 2022',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'
   }
 ];
@@ -52,12 +52,10 @@ export const AuthProvider = ({ children }) => {
     return null;
   });
 
-  // Sync users list to localStorage on change
   useEffect(() => {
     localStorage.setItem('dayflow_users', JSON.stringify(users));
   }, [users]);
 
-  // Sync active user session to localStorage on change
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem('dayflow_session', JSON.stringify(currentUser));
@@ -66,23 +64,26 @@ export const AuthProvider = ({ children }) => {
     }
   }, [currentUser]);
 
-  // Login handler
-  const login = async ({ email, password, role }) => {
-    const formattedEmail = email.trim().toLowerCase();
-    const payload = { email: formattedEmail, password, role };
+  // Login handler accepting email or loginId as identifier
+  const login = async ({ identifier, email, password, role }) => {
+    const cleanId = (identifier || email || '').trim();
+    const payload = { identifier: cleanId, password };
 
     try {
-      // Attempt backend API call to https://hrms-platform-monh.onrender.com/api
       const apiResult = await authApi.login(payload);
       const userFromBackend = apiResult.data?.user || apiResult.data;
+      const rawRole = userFromBackend?.role || role || 'EMPLOYEE';
+      const normalizedRole = (rawRole === 'ADMIN' || rawRole === 'HR / People team' || rawRole === 'Admin') ? 'ADMIN' : 'EMPLOYEE';
 
       const activeUserSession = {
-        employeeId: userFromBackend?.employeeId || userFromBackend?.id || 'EMP-' + Math.floor(1000 + Math.random() * 9000),
-        email: userFromBackend?.email || formattedEmail,
-        fullName: userFromBackend?.fullName || userFromBackend?.name || formattedEmail.split('@')[0],
-        role: role || userFromBackend?.role || 'Employee',
+        id: userFromBackend?.id || userFromBackend?._id,
+        loginId: userFromBackend?.loginId || userFromBackend?.employeeId || cleanId,
+        email: userFromBackend?.email || cleanId,
+        fullName: userFromBackend?.name || userFromBackend?.fullName || cleanId.split('@')[0],
+        role: normalizedRole,
         department: userFromBackend?.department || 'General Staff',
-        token: apiResult.data?.token || apiResult.data?.accessToken,
+        token: apiResult.data?.token,
+        mustChangePassword: !!apiResult.data?.mustChangePassword,
         backendConnected: true,
         connectedUrl: apiResult.baseUrl
       };
@@ -90,29 +91,32 @@ export const AuthProvider = ({ children }) => {
       setCurrentUser(activeUserSession);
       return activeUserSession;
     } catch (apiErr) {
-      console.warn('[AuthContext] Backend API login attempt:', apiErr.message);
+      console.warn('[AuthContext] Backend API login fallthrough:', apiErr.message);
 
-      // If error is HTTP 400/401/403/404 from backend server, rethrow error to form
       if (apiErr.status) {
-        throw new Error(apiErr.message || 'Authentication failed. Please verify email and password.');
+        throw new Error(apiErr.message || 'Authentication failed. Please check credentials.');
       }
 
-      // If backend network is unavailable (e.g. timeout / connection refused), fall back to local demo users
+      // Local fallback for offline mode
       const foundUser = users.find(
-        (u) => u.email.toLowerCase() === formattedEmail
+        (u) =>
+          u.email.toLowerCase() === cleanId.toLowerCase() ||
+          (u.loginId && u.loginId.toUpperCase() === cleanId.toUpperCase())
       );
 
       if (!foundUser) {
-        throw new Error(`Unable to connect to backend server (${apiErr.message}). Demo fallback: No local account found with this email.`);
+        throw new Error(`Unable to reach backend (${apiErr.message}). Demo mode: User not found.`);
       }
 
       if (foundUser.password !== password) {
-        throw new Error('Incorrect password. Please verify your credentials and try again.');
+        throw new Error('Incorrect password.');
       }
+
+      const normalizedRole = (foundUser.role === 'ADMIN' || foundUser.role === 'HR / People team' || role === 'ADMIN') ? 'ADMIN' : 'EMPLOYEE';
 
       const activeUserSession = {
         ...foundUser,
-        role: role || foundUser.role,
+        role: normalizedRole,
         backendConnected: false
       };
 
@@ -121,78 +125,52 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Sign up handler
-  const signup = async ({ employeeId, email, password, fullName, role }) => {
-    const formattedEmail = email.trim().toLowerCase();
-    const formattedEmpId = employeeId.trim().toUpperCase();
-
-    const payload = {
-      employeeId: formattedEmpId,
-      email: formattedEmail,
-      password: password,
-      fullName: fullName.trim(),
-      role: role || 'Employee'
-    };
-
+  // Register company / admin handler
+  const signup = async (payload) => {
     try {
-      // Attempt backend API call to https://hrms-platform-monh.onrender.com/api
-      const apiResult = await authApi.signup(payload);
-      const responseUser = apiResult.data?.user || apiResult.data;
+      const registerPayload = {
+        companyName: payload.companyName || payload.fullName || 'Company',
+        adminName: payload.adminName || payload.fullName || 'Admin',
+        email: payload.email,
+        phone: payload.phone || '+91 9000000000',
+        password: payload.password
+      };
+      const apiResult = await authApi.registerCompany(registerPayload);
+      const userFromBackend = apiResult.data?.user || apiResult.data;
 
       const newUser = {
-        employeeId: responseUser?.employeeId || formattedEmpId,
-        email: responseUser?.email || formattedEmail,
-        fullName: responseUser?.fullName || fullName.trim() || 'New Teammate',
-        role: responseUser?.role || role || 'Employee',
-        department: responseUser?.department || (role === 'HR / People team' ? 'People Operations' : 'General Staff'),
-        joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(fullName || 'User')}`,
-        token: apiResult.data?.token || apiResult.data?.accessToken,
-        backendConnected: true,
-        connectedUrl: apiResult.baseUrl
+        id: userFromBackend?.id,
+        loginId: userFromBackend?.loginId || 'OIADMIN20260001',
+        email: payload.email,
+        fullName: payload.fullName || payload.adminName,
+        role: 'ADMIN',
+        department: 'Human Resources',
+        token: apiResult.data?.token,
+        backendConnected: true
       };
 
-      setUsers((prevUsers) => [...prevUsers, newUser]);
+      setUsers((prev) => [...prev, newUser]);
       setCurrentUser(newUser);
       return newUser;
     } catch (apiErr) {
-      console.warn('[AuthContext] Backend API signup attempt:', apiErr.message);
-
-      // If error is specific server response (e.g. 400 user exists), rethrow error
       if (apiErr.status) {
-        throw new Error(apiErr.message || 'Registration failed on server. Please check details.');
+        throw new Error(apiErr.message || 'Registration failed.');
       }
-
-      // If backend network is unreachable, check local store and register locally as fallback
-      const existingEmail = users.find((u) => u.email.toLowerCase() === formattedEmail);
-      if (existingEmail) {
-        throw new Error('An account with this email address already exists.');
-      }
-
-      const existingEmpId = users.find((u) => u.employeeId.toUpperCase() === formattedEmpId);
-      if (existingEmpId) {
-        throw new Error('This Employee ID is already registered in the system.');
-      }
-
       const newUser = {
-        employeeId: formattedEmpId,
-        email: formattedEmail,
-        password: password,
-        fullName: fullName.trim() || 'New Teammate',
-        role: role || 'Employee',
-        department: role === 'HR / People team' ? 'People Operations' : 'General Staff',
-        joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(fullName || 'User')}`,
+        loginId: 'OIADMIN20260001',
+        email: payload.email,
+        password: payload.password,
+        fullName: payload.fullName || payload.adminName,
+        role: 'ADMIN',
+        department: 'Human Resources',
         backendConnected: false
       };
-
-      setUsers((prevUsers) => [...prevUsers, newUser]);
+      setUsers((prev) => [...prev, newUser]);
       setCurrentUser(newUser);
       return newUser;
     }
   };
 
-  // Logout handler
   const logout = () => {
     setCurrentUser(null);
   };
