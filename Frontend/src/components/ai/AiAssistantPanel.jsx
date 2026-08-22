@@ -1,8 +1,128 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, Send, Trash2, Bot, User, RefreshCw, ShieldAlert, BookOpen, CheckCircle2 } from 'lucide-react';
-import { aiApi } from '../../services/api';
+import { aiApi, timeoffApi } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useHrms } from '../../context/HrmsContext';
+
+
+/** Tool calls the agent made — makes it read as an agent, not a chatbot. */
+const StepChips = ({ steps }) =>
+  !steps?.length ? null : (
+    <div className="flex flex-wrap gap-1.5 mb-2">
+      {steps.map((st, i) => (
+        <span
+          key={i}
+          title={`${st.tool}()`}
+          className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+            st.ok
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              : 'bg-red-50 text-red-600 border-red-200'
+          }`}
+        >
+          {st.ok ? '✓' : '✕'} {st.label || st.tool}
+        </span>
+      ))}
+    </div>
+  );
+
+/** Figures the agent returned, shown as numbers rather than buried in prose. */
+const Block = ({ block }) => {
+  const d = block?.data || {};
+  const tiles =
+    block?.type === 'leave_balance'
+      ? [['Paid', d.PAID], ['Sick', d.SICK], ['Unpaid', d.UNPAID]]
+      : block?.type === 'attendance_table'
+      ? [
+          ['Present', d.summary?.daysPresent],
+          ['Leaves', d.summary?.leavesCount],
+          ['Working', d.summary?.totalWorkingDays],
+          ['Payable', d.summary?.payableDays],
+        ]
+      : block?.type === 'salary_breakdown'
+      ? [['Gross', d.gross], ['Net pay', d.netPay]]
+      : null;
+  if (!tiles) return null;
+
+  return (
+    <div className={`mt-2 grid gap-2 grid-cols-${Math.min(tiles.length, 4)}`}>
+      {tiles.map(([label, val]) => (
+        <div key={label} className="rounded-xl border border-[#e8e2d5] bg-[#faf8f5] px-2 py-2 text-center">
+          <div className="text-base font-bold text-[#1c3541] tabular-nums">
+            {typeof val === 'number' ? val.toLocaleString('en-IN') : val ?? '—'}
+          </div>
+          <div className="text-[9px] uppercase tracking-wide text-slate-500">{label}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/** The agent drafts; the person commits. Nothing is written without this. */
+const DraftCard = ({ action, onConfirm }) => {
+  const [state, setState] = useState('idle');
+  const [error, setError] = useState('');
+  const p = action.payload || {};
+
+  const go = async () => {
+    setState('sending');
+    try {
+      await onConfirm(action);
+      setState('done');
+    } catch (e) {
+      setError(e?.message || 'Could not submit.');
+      setState('error');
+    }
+  };
+
+  if (state === 'done')
+    return (
+      <div className="mt-2 rounded-xl border border-emerald-200 bg-emerald-50 p-2.5 text-[11px] font-semibold text-emerald-700">
+        ✓ Submitted — now pending HR review.
+      </div>
+    );
+
+  return (
+    <div className="mt-2 rounded-xl border-2 border-[#e5b869]/50 bg-white p-3">
+      <p className="text-[10px] font-bold uppercase tracking-wide text-[#b5832a] mb-2">
+        Draft — not submitted
+      </p>
+      <dl className="space-y-1 text-[11px]">
+        {p.type && (
+          <div className="flex justify-between">
+            <dt className="text-slate-500">Type</dt>
+            <dd className="font-semibold text-[#1c3541]">{p.type}</dd>
+          </div>
+        )}
+        {p.startDate && (
+          <div className="flex justify-between">
+            <dt className="text-slate-500">Dates</dt>
+            <dd className="font-semibold text-[#1c3541] tabular-nums">
+              {p.startDate} to {p.endDate}
+            </dd>
+          </div>
+        )}
+        {p.days !== undefined && (
+          <div className="flex justify-between">
+            <dt className="text-slate-500">Working days</dt>
+            <dd className="font-semibold text-[#1c3541] tabular-nums">{p.days}</dd>
+          </div>
+        )}
+      </dl>
+      {state === 'error' && <p className="mt-2 text-[11px] text-red-600">{error}</p>}
+      <button
+        type="button"
+        onClick={go}
+        disabled={state === 'sending'}
+        className="mt-3 w-full bg-[#1c3541] text-white text-xs font-bold py-2 rounded-xl hover:bg-[#14262f] disabled:opacity-60 cursor-pointer"
+      >
+        {state === 'sending' ? 'Submitting…' : 'Confirm & submit'}
+      </button>
+      <p className="text-[10px] text-slate-400 text-center mt-1.5">
+        Nothing is submitted until you confirm.
+      </p>
+    </div>
+  );
+};
 
 export const AiAssistantPanel = () => {
   const { currentUser } = useAuth();
@@ -73,55 +193,24 @@ export const AiAssistantPanel = () => {
           text: aiReply,
           blocked: data?.blocked || null,
           sources: data?.sources || null,
+          steps: data?.steps || [],
+          blocks: data?.blocks || [],
+          pendingAction: data?.pendingAction || null,
           mode: data?.mode || 'RAG'
         }
       ]);
     } catch (err) {
       console.warn('AI query API fallback engaged:', err.message);
 
-      // Smart contextual local fallback using real HrmsContext
-      let fallbackText = '';
-      let blockedInfo = null;
-      const q = prompt.toLowerCase();
-
-      if (q.includes('leave') || q.includes('vacation') || q.includes('sick')) {
-        const pendingCount = leaveRequests.filter((l) => l.status === 'PENDING').length;
-        const approvedCount = leaveRequests.filter((l) => l.status === 'APPROVED').length;
-        fallbackText = `📅 **Dayflow Leave Status & Quotas**:\n\n` +
-          `• **Paid Leaves**: 18 days per year | **Sick Leaves**: 10 days per year.\n` +
-          `• **Current Pending Requests**: ${pendingCount} request(s) awaiting approval.\n` +
-          `• **Approved Leaves**: ${approvedCount} request(s) logged.\n\n` +
-          `Submit or approve requests directly from the **Time-Off** menu.`;
-      } else if (q.includes('payroll') || q.includes('salary') || q.includes('wage')) {
-        if (currentUser?.role !== 'ADMIN' && (q.includes('other') || q.includes('john') || q.includes('priya') || q.includes('all'))) {
-          fallbackText = `🔒 I cannot reveal individual salary records of other team members under policy compliance rules.`;
-          blockedInfo = { reason: 'Access restricted: Salary details of other employees can only be viewed by Admin role.', policy: currentUser?.role };
-        } else {
-          fallbackText = `💰 **Dayflow Payroll Structure Engine**:\n\n` +
-            `• **Basic Salary**: 50.00% of Gross Wage\n` +
-            `• **HRA**: 50.00% of Basic Salary\n` +
-            `• **Standard Allowance**: ₹4,167\n` +
-            `• **Performance Bonus & LTA**: 8.33% of Basic each\n` +
-            `• **Deductions**: PF (12% of Basic) + Professional Tax (₹200)\n\n` +
-            `Check your monthly breakdown under the **Payroll** tab.`;
-        }
-      } else if (q.includes('who is on leave') || q.includes('today') || q.includes('attendance')) {
-        const todayLeaves = leaveRequests.filter((l) => l.status === 'APPROVED');
-        if (todayLeaves.length > 0) {
-          const names = todayLeaves.map((l) => l.employeeName).join(', ');
-          fallbackText = `✈️ **Leaves Today**: ${todayLeaves.length} employee(s) on approved leave (${names}).`;
-        } else {
-          fallbackText = `✅ **Presence Today**: All active team members are marked present or on scheduled shifts today.`;
-        }
-      } else if (q.includes('employee') || q.includes('who') || q.includes('count') || q.includes('staff')) {
-        fallbackText = `👥 **Team Roster Overview**:\n\n` +
-          `• **Total Registered Staff**: ${employees.length} employees.\n` +
-          `• **LoggedIn User**: ${currentUser?.fullName} (${currentUser?.role}).\n` +
-          `• **Primary Base**: Gandhinagar, Gujarat.`;
-      } else {
-        fallbackText = `💡 **Dayflow Assistant**: Logged in as ${currentUser?.role || 'User'} (${currentUser?.fullName || currentUser?.name}). ` +
-          `You can manage team profiles, submit leave applications, check attendance streams, or compute payroll structures using the navigation dashboard.`;
-      }
+      // The assistant is unreachable. Say so, and do not invent an answer.
+      // Quotas and payroll figures must come from a tool result — hardcoding
+      // them here produced wrong numbers (18/10 days against a real 24/7)
+      // stated with full confidence, which is worse than no answer at all.
+      const fallbackText =
+        "I can't reach the assistant right now, so I won't guess. " +
+        'Your leave balance, attendance and payslip are on their own tabs, ' +
+        'and HR can help with policy questions.';
+      const blockedInfo = null;
 
       setMessages((prev) => [
         ...prev,
@@ -137,6 +226,13 @@ export const AiAssistantPanel = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleConfirmAction = async (action) => {
+    if (action.action === 'apply_time_off') return timeoffApi.create(action.payload);
+    if (action.action === 'approve_timeoff')
+      return timeoffApi.approve(action.payload.requestId, action.payload.comment);
+    throw new Error('This action cannot be confirmed from here.');
   };
 
   const handleClear = () => {
@@ -208,7 +304,12 @@ export const AiAssistantPanel = () => {
                     : 'bg-white text-slate-800 border border-[#e8e2d5] rounded-tl-none whitespace-pre-wrap'
                 }`}
               >
+                {msg.sender === 'ai' && <StepChips steps={msg.steps} />}
                 {msg.text}
+                {msg.sender === 'ai' && msg.blocks?.map((b, i) => <Block key={i} block={b} />)}
+                {msg.sender === 'ai' && msg.pendingAction && (
+                  <DraftCard action={msg.pendingAction} onConfirm={handleConfirmAction} />
+                )}
               </div>
 
               {/* Blocked Policy Banner */}
