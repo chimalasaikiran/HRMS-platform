@@ -28,7 +28,7 @@ Password for **all** seeded users: `Dayflow@123`
 ## Commands
 
 ```bash
-cd server
+cd backend
 npm install
 npm run seed
 npm run dev

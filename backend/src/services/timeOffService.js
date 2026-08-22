@@ -136,6 +136,10 @@ async function createRequest(userCtx, body) {
     }
   }
 
+  if (startDate > endDate) {
+    throw new AppError('VALIDATION_ERROR', 'startDate must be on or before endDate', 400);
+  }
+
   const [row, emp] = await Promise.all([
     TimeOffRequest.create({
       companyId: userCtx.companyId,

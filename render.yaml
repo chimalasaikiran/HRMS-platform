@@ -3,7 +3,7 @@ services:
     name: dayflow-api
     runtime: node
     plan: free
-    rootDir: server
+    rootDir: backend
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /api/health

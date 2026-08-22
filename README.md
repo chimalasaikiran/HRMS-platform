@@ -11,7 +11,7 @@ Welcome to the **HRMS Platform** repository. Dayflow is a Human Resource Managem
 | Member | Owns |
 |--------|------|
 | Hari | AI agent / RAG (`POST /api/ai/chat`) |
-| Member 2 (vamsi) | Express + MongoDB — [`server/`](./server/) |
+| Member 2 (vamsi) | Express + MongoDB — [`backend/`](./backend/) |
 | Member 3 | React frontend (`client/` / `Frontend/`) |
 
 Docs: [`docs/PLAN.md`](./docs/PLAN.md) · [`docs/api-contract.md`](./docs/api-contract.md) · [`docs/02-backend-db.md`](./docs/02-backend-db.md)
@@ -45,7 +45,7 @@ Docs: [`docs/PLAN.md`](./docs/PLAN.md) · [`docs/api-contract.md`](./docs/api-co
 | Layer | Technology |
 |-------|------------|
 | Frontend | React (Vite), Tailwind CSS |
-| Backend | Node.js, Express (`server/`) |
+| Backend | Node.js, Express (`backend/`) |
 | Database | MongoDB Atlas, Mongoose |
 | Validation | Zod |
 | Auth | JWT + bcrypt |
@@ -69,7 +69,7 @@ netPayable = netPay × (payableDays ÷ totalWorkingDays)
 
 ```
 HRMS-platform/
-├── server/                   # Member 2 — Express + MongoDB (this branch)
+├── backend/                  # Member 2 — Express + MongoDB (this branch)
 │   └── src/
 │       ├── models/
 │       ├── routes/
@@ -87,23 +87,23 @@ HRMS-platform/
 ## Backend quick start (Member 2)
 
 ```bash
-cd server
+cd backend
 npm install
 npm run seed
 npm run dev
 ```
 
 API: `http://localhost:5000/api`  
-Demo logins: see [`server/SEED.md`](./server/SEED.md)
+Demo logins: see [`backend/SEED.md`](./backend/SEED.md)
 
 ---
 
 ## Deploy on Render
 
-Repo includes [`render.yaml`](./render.yaml) (Web Service `dayflow-api`, root `server/`).
+Repo includes [`render.yaml`](./render.yaml) (Web Service `dayflow-api`, root `backend/`).
 
 1. Use branch **`vamsi`**
-2. [Render Dashboard](https://dashboard.render.com) → **New** → **Blueprint** (or Web Service, Root Directory `server`)
+2. [Render Dashboard](https://dashboard.render.com) → **New** → **Blueprint** (or Web Service, Root Directory `backend`)
 3. Env vars (do **not** commit `.env`):
    - `MONGODB_URI`
    - `JWT_SECRET`
