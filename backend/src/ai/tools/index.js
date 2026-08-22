@@ -70,9 +70,13 @@ const definitions = [
     name: 'get_my_attendance',
     label: 'Read attendance records',
     description:
-      "Get the signed-in user's own attendance for a month: day-wise records plus a summary of days present, leaves, total working days and payable days. Month format YYYY-MM; omit for the current month.",
+      "Get the signed-in user's own attendance: day-wise records plus a summary of days present, leaves, total working days and payable days. Call with no arguments to get the CURRENT month, which always works. Only pass `month` (format YYYY-MM) when the user asks about a different month.",
     schema: z.object({
-      month: z.string().regex(/^\d{4}-\d{2}$/).optional().describe('Month as YYYY-MM'),
+      month: z
+        .string()
+        .regex(/^\d{4}-\d{2}$/)
+        .nullish()
+        .describe('Optional. A past month as YYYY-MM. Leave this out for the current month.'),
     }),
     handler: async ({ month }, userCtx) => {
       const m = month || currentMonth();
@@ -91,7 +95,7 @@ const definitions = [
     description:
       "Get the signed-in user's OWN payslip — earnings, deductions, gross, net pay and payable days. Only ever returns the caller's own salary.",
     schema: z.object({
-      month: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+      month: z.string().regex(/^\d{4}-\d{2}$/).nullish(),
     }),
     handler: async ({ month }, userCtx) => {
       const data = await payrollService.payrollMe(userCtx, month || currentMonth()).catch(rethrow);
@@ -108,7 +112,7 @@ const definitions = [
       type: LeaveType,
       startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).describe('Start date YYYY-MM-DD'),
       endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).describe('End date YYYY-MM-DD'),
-      reason: z.string().max(300).optional(),
+      reason: z.string().max(300).nullish(),
     }),
     handler: async ({ type, startDate, endDate, reason }, userCtx) => {
       if (endDate < startDate) {
@@ -221,7 +225,7 @@ const definitions = [
       'HR only. List employees absent or on leave on a given date. Date format YYYY-MM-DD; omit for today.',
     adminOnly: true,
     schema: z.object({
-      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullish(),
     }),
     handler: async ({ date }, userCtx) => ({
       data: await attendanceService.adminDayView(userCtx, date).catch(rethrow),
@@ -247,7 +251,7 @@ const definitions = [
     adminOnly: true,
     schema: z.object({
       requestId: z.string().min(1),
-      comment: z.string().max(300).optional(),
+      comment: z.string().max(300).nullish(),
     }),
     handler: async ({ requestId, comment }, userCtx) => {
       const all = await timeOffService.listAll(userCtx, { status: 'PENDING' }).catch(rethrow);
@@ -283,7 +287,7 @@ function toolDefsFor(userCtx) {
       function: {
         name: d.name,
         description: d.description,
-        parameters: zodToJsonSchema(d.schema, { target: 'openApi3', $refStrategy: 'none' }),
+        parameters: zodToJsonSchema(d.schema, { target: 'jsonSchema7', $refStrategy: 'none' }),
       },
     }));
 }

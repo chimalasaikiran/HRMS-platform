@@ -8,7 +8,7 @@ const CONFIG = {
     apiKey: process.env.GROQ_API_KEY,
     model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
     /** Swap to this if tool-call reliability slips. */
-    fallbackModel: 'moonshotai/kimi-k2-instruct',
+    fallbackModel: 'openai/gpt-oss-20b',
     /** Zero on tool-calling turns — the model must not get creative with data. */
     temperature: 0,
     /** 'low' keeps routine lookups fast. */
