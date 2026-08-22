@@ -1,38 +1,40 @@
-# HRMS Platform (Human Resource Management System)
+# Dayflow HRMS
 
-Welcome to the **HRMS Platform** repository. This enterprise Human Resource Management System is designed to streamline employee management, attendance, payroll, performance tracking, and organizational workflows.
+Team of 3 · Member 2 backend lives in [`server/`](./server/).
 
-## 🚀 Features
+| Member | Owns |
+|--------|------|
+| Hari | AI agent / RAG (`POST /api/ai/chat`) |
+| **Member 2 (you)** | Express + MongoDB — [`server/`](./server/) |
+| Member 3 | React frontend (`client/`) |
 
-- **Employee Management**: Centralized records for employee profiles, roles, and onboarding.
-- **Attendance & Leave Management**: Track attendance, leave requests, and approvals.
-- **Payroll Processing**: Automated salary calculation, tax deductions, and payslips.
-- **Performance & Reviews**: Goal setting, appraisals, and employee feedback tracking.
-- **Role-Based Access Control (RBAC)**: Secure access control for Admins, HR, Managers, and Employees.
+Docs: [`docs/PLAN.md`](./docs/PLAN.md) · [`docs/api-contract.md`](./docs/api-contract.md) · [`docs/02-backend-db.md`](./docs/02-backend-db.md)
 
-## 📁 Repository Structure
+## Backend quick start
 
+```bash
+cd server
+npm install
+npm run seed
+npm run dev
 ```
-HRMS/
-├── Frontend/      # User interface and client-side applications
-└── backend/       # API server, database models, and business logic
-```
 
-## 🛠️ Getting Started
+API: `http://localhost:5000/api`  
+Demo logins: see [`server/SEED.md`](./server/SEED.md)
 
-### Prerequisites
+## Deploy on Render
 
-- Git
-- Node.js / Database / API Server runtime environments
+Repo includes [`render.yaml`](./render.yaml) (Web Service `dayflow-api`, root `server/`).
 
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/chimalasaikiran/HRMS-platform.git
-   cd HRMS
-   ```
-
-## 📄 License
-
-This project is licensed under the MIT License.
+1. Push branch `vamsi` to GitHub
+2. [Render Dashboard](https://dashboard.render.com) → **New** → **Blueprint** → select `HRMS-platform` / branch `vamsi`  
+   Or **New Web Service** → connect repo → Root Directory `server` → Build `npm install` → Start `npm start`
+3. Set env vars (do **not** commit `.env`):
+   - `MONGODB_URI` — Atlas connection string (database `dayflow`)
+   - `JWT_SECRET` — same secret the team uses
+   - `HOST=0.0.0.0`
+   - `NODE_ENV=production`
+   - `JWT_EXPIRES_IN=7d`
+4. In Atlas **Network Access**, allow `0.0.0.0/0` (or Render outbound IPs)
+5. After deploy, health: `https://<your-service>.onrender.com/api/health`
+6. Optional seed (one-time): Render Shell → `cd server` is already root → `npm run seed`
