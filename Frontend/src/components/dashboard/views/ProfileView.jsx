@@ -154,7 +154,7 @@ export const ProfileView = ({ employeeData }) => {
               <h3 className="font-serif-title text-2xl font-bold text-[#1c3541]">
                 {empRecord.fullName || empRecord.name || 'John Doe'}
               </h3>
-              <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e5b869]/20 text-[#9e701a] border border-[#e5b869]/30">
+              <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#e5b869]/20 text-[#9e701a] border border-[#e5b869]/30">
                 <Shield className="w-3 h-3 mr-1" />
                 {empRecord.role || 'EMPLOYEE'}
               </span>
@@ -173,12 +173,12 @@ export const ProfileView = ({ employeeData }) => {
 
         <div className="bg-[#faf8f5] p-3.5 rounded-xl border border-[#e8e2d5] flex items-center gap-4 shrink-0 justify-around text-xs">
           <div>
-            <div className="text-[10px] uppercase font-bold text-slate-400">Company</div>
+            <div className="text-[10px] uppercase font-semibold text-slate-400">Company</div>
             <div className="font-bold text-[#1c3541]">{empRecord.company || 'Odoo India'}</div>
           </div>
           <div className="h-6 w-px bg-[#e8e2d5]" />
           <div>
-            <div className="text-[10px] uppercase font-bold text-slate-400">Location</div>
+            <div className="text-[10px] uppercase font-semibold text-slate-400">Location</div>
             <div className="font-bold text-[#1c3541]">{empRecord.location || 'Gandhinagar'}</div>
           </div>
         </div>
@@ -196,7 +196,7 @@ export const ProfileView = ({ employeeData }) => {
         <button
           type="button"
           onClick={() => setActiveTab('resume')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+          className={`px-5 py-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'resume'
               ? 'border-[#1c3541] text-[#1c3541] bg-white rounded-t-xl'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -208,7 +208,7 @@ export const ProfileView = ({ employeeData }) => {
         <button
           type="button"
           onClick={() => setActiveTab('private')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+          className={`px-5 py-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'private'
               ? 'border-[#1c3541] text-[#1c3541] bg-white rounded-t-xl'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -222,7 +222,7 @@ export const ProfileView = ({ employeeData }) => {
           <button
             type="button"
             onClick={() => setActiveTab('salary')}
-            className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+            className={`px-5 py-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
               activeTab === 'salary'
                 ? 'border-[#1c3541] text-[#1c3541] bg-white rounded-t-xl'
                 : 'border-transparent text-[#b5832a] hover:text-[#9e701a]'
@@ -236,7 +236,7 @@ export const ProfileView = ({ employeeData }) => {
         <button
           type="button"
           onClick={() => setActiveTab('security')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+          className={`px-5 py-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'security'
               ? 'border-[#1c3541] text-[#1c3541] bg-white rounded-t-xl'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -302,7 +302,7 @@ export const ProfileView = ({ employeeData }) => {
           <div className="flex justify-end pt-3 border-t border-[#f3efe6]">
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-[#1c3541] text-white font-bold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
+              className="px-5 py-2.5 rounded-xl bg-[#1c3541] text-white font-semibold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
             >
               <Check className="w-4 h-4 text-[#e5b869]" />
               <span>Save Resume</span>
@@ -466,7 +466,7 @@ export const ProfileView = ({ employeeData }) => {
           <div className="flex justify-end pt-3 border-t border-[#f3efe6]">
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-[#1c3541] text-white font-bold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
+              className="px-5 py-2.5 rounded-xl bg-[#1c3541] text-white font-semibold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
             >
               <Check className="w-4 h-4 text-[#e5b869]" />
               <span>Save Private Info</span>
@@ -487,7 +487,7 @@ export const ProfileView = ({ employeeData }) => {
                 Type one number — Wage — and all components auto-calculate instantly.
               </p>
             </div>
-            <span className="text-xs font-bold text-[#b5832a] bg-[#faf6f0] px-3 py-1 rounded-full border border-[#e8e2d5]">
+            <span className="text-xs font-semibold text-[#b5832a] bg-[#faf6f0] px-3 py-1 rounded-full border border-[#e8e2d5]">
               Contract Rule Formula
             </span>
           </div>
@@ -562,7 +562,7 @@ export const ProfileView = ({ employeeData }) => {
             </div>
 
             <div className="p-5 rounded-2xl bg-[#1c3541] text-white flex flex-col justify-between space-y-2">
-              <div className="text-xs uppercase font-bold text-slate-300">Net Take-Home Pay (Monthly)</div>
+              <div className="text-xs uppercase font-semibold text-slate-300">Net Take-Home Pay (Monthly)</div>
               <div className="font-serif-title text-3xl font-bold text-[#e5b869] font-mono">
                 &rsquo;{salaryCalc.netPay.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </div>
@@ -573,7 +573,7 @@ export const ProfileView = ({ employeeData }) => {
           <div className="flex justify-end pt-3 border-t border-[#f3efe6]">
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#1c3541] text-white font-bold text-xs shadow-xs cursor-pointer flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-[#1c3541] text-white font-semibold text-xs shadow-xs cursor-pointer flex items-center gap-2"
             >
               <Check className="w-4 h-4 text-[#e5b869]" />
               <span>Save Computed Salary Structure</span>
@@ -640,7 +640,7 @@ export const ProfileView = ({ employeeData }) => {
             <button
               type="submit"
               disabled={isPassLoading}
-              className="px-5 py-2.5 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white font-bold text-xs shadow-xs cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white font-semibold text-xs shadow-xs cursor-pointer"
             >
               {isPassLoading ? 'Updating Password...' : 'Update Password'}
             </button>

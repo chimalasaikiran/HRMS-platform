@@ -25,13 +25,13 @@ export const PendingLeaveCard = ({ onReviewAll }) => {
       <div>
         {/* Header Tag & Title */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-[#a88243] font-mono">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-[#a88243] font-mono">
             NEEDS A LOOK
           </span>
           <button
             type="button"
             onClick={onReviewAll}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#b5832a] hover:text-[#1c3541] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#b5832a] hover:text-[#1c3541] transition-colors cursor-pointer"
           >
             <span>Review all</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -50,7 +50,7 @@ export const PendingLeaveCard = ({ onReviewAll }) => {
               className="p-4 rounded-xl bg-[#faf6f0] border border-[#e8e2d5]/60 flex items-center justify-between gap-4 transition-all hover:border-[#dcd4c3]"
             >
               <div className="flex items-center gap-3.5 min-w-0">
-                <div className="w-10 h-10 rounded-full bg-[#d6cfbe] text-[#4a4233] font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-full bg-[#d6cfbe] text-[#4a4233] font-semibold text-xs flex items-center justify-center shrink-0">
                   {req.initials}
                 </div>
                 <div className="min-w-0">
@@ -87,7 +87,7 @@ export const PendingLeaveCard = ({ onReviewAll }) => {
                 </div>
               ) : (
                 <span
-                  className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                  className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                     req.status === 'approved'
                       ? 'bg-emerald-100 text-emerald-800'
                       : 'bg-rose-100 text-rose-800'

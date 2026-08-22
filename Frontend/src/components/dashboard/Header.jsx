@@ -37,7 +37,7 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
         <div className="hidden md:flex items-center gap-2">
           <span className="text-xs font-semibold text-slate-500">Welcome to Dayflow</span>
           <span className="w-1 h-1 rounded-full bg-slate-300" />
-          <span className="text-xs font-bold text-[#1c3541]">
+          <span className="text-xs font-semibold text-[#1c3541]">
             {currentUser?.role === 'Employee' ? 'Employee Portal' : 'Admin & HR Management'}
           </span>
         </div>
@@ -49,14 +49,14 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
         <div className="flex items-center gap-2 bg-[#faf6f0] border border-[#e8e2d5] rounded-full px-3 py-1 text-xs">
           {checkInState?.isCheckedIn ? (
             <>
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-soft" />
               <span className="text-slate-600 hidden sm:inline text-[11px] font-medium">
                 Since {checkInState.checkInTime || '09:30 AM'}
               </span>
               <button
                 type="button"
                 onClick={() => checkOut(currentUser)}
-                className="font-bold text-red-600 hover:text-red-700 cursor-pointer ml-1 text-xs transition-colors"
+                className="font-semibold text-red-600 hover:text-red-700 cursor-pointer ml-1 text-xs transition-colors"
               >
                 Check Out &rarr;
               </button>
@@ -67,7 +67,7 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
               <button
                 type="button"
                 onClick={() => checkIn(currentUser)}
-                className="font-bold text-[#1c3541] hover:text-[#28495a] cursor-pointer text-xs transition-colors"
+                className="font-semibold text-[#1c3541] hover:text-[#28495a] cursor-pointer text-xs transition-colors"
               >
                 Check IN &rarr;
               </button>
@@ -95,7 +95,7 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
           {notificationsOpen && (
             <div className="absolute right-0 mt-2 w-80 bg-white border border-[#e8e2d5] rounded-2xl shadow-xl z-50 overflow-hidden py-2 animate-fade-in">
               <div className="px-4 py-2 border-b border-[#f3efe6] flex items-center justify-between">
-                <span className="text-xs font-bold text-[#1c3541] uppercase tracking-wider">Notifications</span>
+                <span className="text-xs font-semibold text-[#1c3541] uppercase tracking-wider">Notifications</span>
                 <span className="text-[10px] font-semibold bg-[#e5b869]/20 text-[#b5832a] px-2 py-0.5 rounded-full">
                   {myActivities.length} New
                 </span>
@@ -106,7 +106,7 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
                 ) : (
                   myActivities.map((n) => (
                     <div key={n.id} className="p-3 hover:bg-[#faf8f5] transition-colors cursor-pointer">
-                      <div className="text-xs font-bold text-slate-800">{n.title}</div>
+                      <div className="text-xs font-semibold text-slate-800">{n.title}</div>
                       <div className="text-[11px] text-slate-500 mt-0.5">{n.desc}</div>
                       <div className="text-[10px] text-slate-400 mt-1">{n.time}</div>
                     </div>
@@ -130,11 +130,11 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
             }}
             className="flex items-center gap-2.5 p-1 sm:pr-2.5 rounded-full hover:bg-[#faf6f0] transition-all cursor-pointer border border-transparent hover:border-[#e8e2d5]"
           >
-            <div className="w-8 h-8 rounded-full bg-[#ebdcb9] text-[#705220] font-bold text-xs flex items-center justify-center ring-2 ring-[#e5b869]/40 shrink-0">
+            <div className="w-8 h-8 rounded-full bg-[#ebdcb9] text-[#705220] font-semibold text-xs flex items-center justify-center ring-2 ring-[#e5b869]/40 shrink-0">
               {getInitials(currentUser?.fullName || 'Maya Chen')}
             </div>
             <div className="hidden sm:block text-left">
-              <span className="block text-xs font-bold text-[#1c3541] tracking-tight leading-tight">
+              <span className="block text-xs font-semibold text-[#1c3541] tracking-tight leading-tight">
                 {currentUser?.fullName || 'Maya Chen'}
               </span>
               <span className="block text-[10px] text-slate-400 font-medium leading-none">
@@ -147,7 +147,7 @@ export const Header = ({ onOpenSidebar, onNavigate }) => {
           {profileDropdownOpen && (
             <div className="absolute right-0 mt-2 w-60 bg-white border border-[#e8e2d5] rounded-2xl shadow-xl z-50 overflow-hidden py-2 animate-fade-in">
               <div className="px-4 py-3 border-b border-[#f3efe6] bg-[#faf8f5]">
-                <div className="text-xs font-bold text-[#1c3541]">
+                <div className="text-xs font-semibold text-[#1c3541]">
                   {currentUser?.fullName || 'Maya Chen'}
                 </div>
                 <div className="text-[11px] text-slate-500 truncate">

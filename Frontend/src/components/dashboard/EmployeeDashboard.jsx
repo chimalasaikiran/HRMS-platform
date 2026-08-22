@@ -73,7 +73,7 @@ export const EmployeeDashboard = ({ onNavigate, onApplyLeaveClick }) => {
           {/* Clock In / Out Quick Pill Widget */}
           <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl flex items-center justify-between gap-4 shrink-0 sm:min-w-[260px]">
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-300">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-300">
                 Today's Status
               </div>
               <div className="text-sm font-bold text-white flex items-center gap-1.5 mt-0.5">
@@ -81,7 +81,7 @@ export const EmployeeDashboard = ({ onNavigate, onApplyLeaveClick }) => {
                   <span className="text-slate-300">Shift Completed ({todayAttendance?.checkOut})</span>
                 ) : isCheckedIn ? (
                   <span className="text-emerald-400 font-bold flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 pulse-soft" />
                     Checked In ({todayAttendance?.checkIn})
                   </span>
                 ) : (
@@ -95,7 +95,7 @@ export const EmployeeDashboard = ({ onNavigate, onApplyLeaveClick }) => {
                 type="button"
                 onClick={handleClockAction}
                 disabled={isProcessingClock}
-                className={`px-4 py-2.5 rounded-xl font-bold text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-4 py-2.5 rounded-xl font-semibold text-xs shadow-md transition-all cursor-pointer flex items-center gap-1.5 ${
                   isCheckedIn
                     ? 'bg-rose-500 hover:bg-rose-600 text-white'
                     : 'bg-[#e5b869] hover:bg-[#d8a755] text-[#1c3541]'
@@ -127,7 +127,7 @@ export const EmployeeDashboard = ({ onNavigate, onApplyLeaveClick }) => {
                 <div className="w-10 h-10 rounded-xl bg-[#1c3541]/10 text-[#1c3541] flex items-center justify-center font-bold">
                   <User className="w-5 h-5" />
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
                   Verified
                 </span>
               </div>
@@ -160,7 +160,7 @@ export const EmployeeDashboard = ({ onNavigate, onApplyLeaveClick }) => {
                 <div className="w-10 h-10 rounded-xl bg-[#e5b869]/20 text-[#b5832a] flex items-center justify-center font-bold">
                   <Clock className="w-5 h-5" />
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#e5b869]/20 text-[#9e701a]">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#e5b869]/20 text-[#9e701a]">
                   Daily Log
                 </span>
               </div>
@@ -197,7 +197,7 @@ export const EmployeeDashboard = ({ onNavigate, onApplyLeaveClick }) => {
                   <Calendar className="w-5 h-5" />
                 </div>
                 {pendingLeavesCount > 0 && (
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800">
                     {pendingLeavesCount} Pending
                   </span>
                 )}
@@ -231,7 +231,7 @@ export const EmployeeDashboard = ({ onNavigate, onApplyLeaveClick }) => {
                 <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
                   <LogOut className="w-5 h-5" />
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
                   Session Active
                 </span>
               </div>
@@ -273,7 +273,7 @@ export const EmployeeDashboard = ({ onNavigate, onApplyLeaveClick }) => {
                 <p className="text-xs text-slate-500">Live notifications, approval updates & company notices</p>
               </div>
             </div>
-            <span className="text-[11px] font-bold bg-[#faf8f5] border border-[#e8e2d5] px-2.5 py-1 rounded-full text-slate-600">
+            <span className="text-[11px] font-semibold bg-[#faf8f5] border border-[#e8e2d5] px-2.5 py-1 rounded-full text-slate-600">
               {myActivities.length} items
             </span>
           </div>
@@ -296,7 +296,7 @@ export const EmployeeDashboard = ({ onNavigate, onApplyLeaveClick }) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <h4 className="text-xs font-bold text-[#1c3541] truncate">{act.title}</h4>
+                      <h4 className="text-xs font-semibold text-[#1c3541] truncate">{act.title}</h4>
                       <span className="text-[10px] font-medium text-slate-400 shrink-0">{act.time}</span>
                     </div>
                     <p className="text-xs text-slate-600 mt-0.5">{act.desc}</p>

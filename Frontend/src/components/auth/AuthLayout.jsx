@@ -38,7 +38,7 @@ export const AuthLayout = ({ children }) => {
           </p>
 
           {/* Accent Tagline */}
-          <div className="text-[#c89e60] text-xs font-bold uppercase tracking-[0.2em]">
+          <div className="text-[#c89e60] text-xs font-semibold uppercase tracking-[0.2em]">
             PEOPLE OPERATIONS, WITH A PULSE.
           </div>
         </div>

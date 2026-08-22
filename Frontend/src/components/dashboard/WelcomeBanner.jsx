@@ -22,7 +22,7 @@ export const WelcomeBanner = () => {
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
       <div>
-        <div className="text-[11px] font-bold uppercase tracking-widest text-[#a88243] mb-1.5 font-mono">
+        <div className="text-[11px] font-semibold uppercase tracking-widest text-[#a88243] mb-1.5 font-mono">
           TUESDAY, MARCH 18, 2025
         </div>
         <h1 className="font-serif-title text-4xl sm:text-5xl font-bold text-[#1c3541] tracking-tight leading-none mb-2">

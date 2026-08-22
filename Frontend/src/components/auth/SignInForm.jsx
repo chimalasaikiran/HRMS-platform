@@ -41,7 +41,7 @@ export const SignInForm = ({ onSwitchToSignUp, onSuccessRedirect }) => {
     <div className="animate-fade-in">
       <div className="mb-6">
         <div className="flex items-center justify-between gap-2 mb-1">
-          <div className="text-[#c89e60] text-xs font-bold uppercase tracking-[0.18em]">
+          <div className="text-[#c89e60] text-xs font-semibold uppercase tracking-[0.18em]">
             WELCOME BACK
           </div>
           <ApiStatusBadge />

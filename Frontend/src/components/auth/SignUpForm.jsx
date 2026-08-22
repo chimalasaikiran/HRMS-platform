@@ -68,7 +68,7 @@ export const SignUpForm = ({ onSwitchToSignIn, onSuccessRedirect }) => {
       {/* Header section */}
       <div className="mb-5">
         <div className="flex items-center justify-between gap-2 mb-1">
-          <div className="text-[#c89e60] text-xs font-bold uppercase tracking-[0.18em]">
+          <div className="text-[#c89e60] text-xs font-semibold uppercase tracking-[0.18em]">
             JOIN THE WORKSPACE
           </div>
           <ApiStatusBadge />

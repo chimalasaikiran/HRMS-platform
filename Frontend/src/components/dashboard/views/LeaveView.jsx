@@ -169,7 +169,7 @@ export const LeaveView = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-[#e8e2d5] text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <tr className="border-b border-[#e8e2d5] text-[10px] font-semibold uppercase tracking-widest text-slate-400">
                 <th className="py-3 px-4">EMPLOYEE</th>
                 <th className="py-3 px-4">LEAVE TYPE</th>
                 <th className="py-3 px-4">DATE RANGE</th>
@@ -186,7 +186,7 @@ export const LeaveView = () => {
                     <div className="text-[10px] font-mono text-slate-400">{req.employeeId}</div>
                   </td>
                   <td className="py-4 px-4 font-semibold text-slate-700">
-                    <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#faf8f5] border border-[#e8e2d5]">
+                    <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#faf8f5] border border-[#e8e2d5]">
                       {req.type} Leave
                     </span>
                   </td>
@@ -231,7 +231,7 @@ export const LeaveView = () => {
                     ) : (
                       /* Status Tag */
                       <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${
+                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
                           req.status === 'Approved'
                             ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                             : req.status === 'Rejected'
@@ -288,7 +288,7 @@ export const LeaveView = () => {
             <form onSubmit={handleApplySubmit} className="space-y-4">
               {/* Leave Type */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Leave Type <span className="text-rose-500">*</span>
                 </label>
                 <select
@@ -305,7 +305,7 @@ export const LeaveView = () => {
               {/* Dates Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Start Date <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -318,7 +318,7 @@ export const LeaveView = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     End Date <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -333,7 +333,7 @@ export const LeaveView = () => {
 
               {/* Remarks */}
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Reason & Remarks <span className="text-rose-500">*</span>
                 </label>
                 <textarea
@@ -350,13 +350,13 @@ export const LeaveView = () => {
                 <button
                   type="button"
                   onClick={() => setShowApplyModal(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white font-bold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white font-semibold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
                 >
                   <Send className="w-4 h-4 text-[#e5b869]" />
                   <span>Submit Application</span>
@@ -390,7 +390,7 @@ export const LeaveView = () => {
 
             <form onSubmit={handleConfirmAdminAction} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Add Admin Comment / Note (Optional)
                 </label>
                 <textarea
@@ -410,13 +410,13 @@ export const LeaveView = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedRequest(null)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className={`px-5 py-2 rounded-xl text-white font-bold text-xs shadow-xs ${
+                  className={`px-5 py-2 rounded-xl text-white font-semibold text-xs shadow-xs ${
                     adminActionType === 'approve'
                       ? 'bg-emerald-600 hover:bg-emerald-700'
                       : 'bg-rose-600 hover:bg-rose-700'

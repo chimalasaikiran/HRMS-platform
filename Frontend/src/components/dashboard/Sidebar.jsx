@@ -99,7 +99,7 @@ export const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
               className="w-full bg-[#162b35] hover:bg-[#203a48] border border-white/10 rounded-xl p-3 flex items-center justify-between text-left transition-all cursor-pointer group"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-[#e5b869] text-[#1c3541] font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-[#e5b869] text-[#1c3541] font-semibold text-xs flex items-center justify-center shrink-0">
                   {isEmployee ? 'E' : 'HR'}
                 </div>
                 <div className="min-w-0">
@@ -127,7 +127,7 @@ export const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
                       setWorkspaceMenuOpen(false);
                     }}
                     className={`w-full px-3 py-2 text-left text-xs font-medium transition-colors flex items-center justify-between ${
-                      selectedWorkspace === ws ? 'bg-[#e5b869]/20 text-[#e5b869] font-bold' : 'text-slate-300 hover:bg-white/10'
+                      selectedWorkspace === ws ? 'bg-[#e5b869]/20 text-[#e5b869] font-semibold' : 'text-slate-300 hover:bg-white/10'
                     }`}
                   >
                     <span>{ws}</span>
@@ -141,7 +141,7 @@ export const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
           {/* Navigation Section: WORKSPACE */}
           <div className="space-y-6">
             <div>
-              <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400/80">
+              <div className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400/80">
                 Workspace
               </div>
               <nav className="space-y-1">
@@ -168,7 +168,7 @@ export const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
                       </div>
                       {item.badge && (
                         <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                          className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                             isActive ? 'bg-[#1c3541] text-[#e5b869]' : 'bg-[#e76f51] text-white'
                           }`}
                         >
@@ -183,7 +183,7 @@ export const Sidebar = ({ activeTab, setActiveTab, isOpen, onClose }) => {
 
             {/* Navigation Section: PERSONAL */}
             <div>
-              <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400/80">
+              <div className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400/80">
                 Personal
               </div>
               <nav className="space-y-1">

@@ -106,22 +106,22 @@ export const EmployeesView = ({ onSelectEmployee }) => {
     const st = (status || 'PRESENT').toUpperCase();
     if (st === 'PRESENT') {
       return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 pulse-soft" />
           <span>Present</span>
         </span>
       );
     }
     if (st === 'ON_LEAVE' || st === 'LEAVE') {
       return (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-200">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-sky-100 text-sky-800 border border-sky-200">
           <span>✈️</span>
           <span>On Leave</span>
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
         <span className="w-2 h-2 rounded-full bg-amber-500" />
         <span>Absent</span>
       </span>
@@ -232,7 +232,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
               </div>
 
               <div className="mt-4 pt-3 border-t border-[#f3efe6] flex items-center justify-between text-xs">
-                <span className="font-mono text-slate-500 text-[11px] font-bold bg-[#faf6f0] px-2 py-0.5 rounded border border-[#e8e2d5]">
+                <span className="font-mono text-slate-500 text-[11px] font-semibold bg-[#faf6f0] px-2 py-0.5 rounded border border-[#e8e2d5]">
                   {loginId}
                 </span>
                 {isAdmin && (
@@ -242,7 +242,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                       e.stopPropagation();
                       handleEditClick(emp);
                     }}
-                    className="px-3 py-1 rounded-lg bg-[#1c3541] hover:bg-[#28495a] text-white text-[11px] font-bold transition-all cursor-pointer inline-flex items-center gap-1"
+                    className="px-3 py-1 rounded-lg bg-[#1c3541] hover:bg-[#28495a] text-white text-[11px] font-semibold transition-all cursor-pointer inline-flex items-center gap-1"
                   >
                     <Edit3 className="w-3 h-3 text-[#e5b869]" />
                     <span>Edit Profile</span>
@@ -285,7 +285,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
             <form onSubmit={handleCreateSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">First Name</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">First Name</label>
                   <input
                     type="text"
                     value={newEmpForm.firstName}
@@ -297,7 +297,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Last Name</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Last Name</label>
                   <input
                     type="text"
                     value={newEmpForm.lastName}
@@ -309,7 +309,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Email</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Email</label>
                   <input
                     type="email"
                     value={newEmpForm.email}
@@ -321,7 +321,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Mobile</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Mobile</label>
                   <input
                     type="text"
                     value={newEmpForm.mobile}
@@ -331,7 +331,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Job Position</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Job Position</label>
                   <input
                     type="text"
                     value={newEmpForm.jobPosition}
@@ -342,7 +342,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Department</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Department</label>
                   <select
                     value={newEmpForm.department}
                     onChange={(e) => setNewEmpForm({ ...newEmpForm, department: e.target.value })}
@@ -356,7 +356,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Location</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Location</label>
                   <input
                     type="text"
                     value={newEmpForm.location}
@@ -366,7 +366,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Date of Joining</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Date of Joining</label>
                   <input
                     type="date"
                     value={newEmpForm.dateOfJoining}
@@ -380,13 +380,13 @@ export const EmployeesView = ({ onSelectEmployee }) => {
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white font-bold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white font-semibold text-xs shadow-xs cursor-pointer flex items-center gap-1.5"
                 >
                   <Check className="w-4 h-4 text-[#e5b869]" />
                   <span>Generate Employee</span>
@@ -427,7 +427,7 @@ export const EmployeesView = ({ onSelectEmployee }) => {
             <button
               type="button"
               onClick={() => setCreatedResultModal(null)}
-              className="w-full py-2.5 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white text-xs font-bold transition-all cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white text-xs font-semibold transition-all cursor-pointer"
             >
               Done & Close
             </button>

@@ -83,7 +83,7 @@ const DraftCard = ({ action, onConfirm }) => {
 
   return (
     <div className="mt-2 rounded-xl border-2 border-[#e5b869]/50 bg-white p-3">
-      <p className="text-[10px] font-bold uppercase tracking-wide text-[#b5832a] mb-2">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-[#b5832a] mb-2">
         Draft — not submitted
       </p>
       <dl className="space-y-1 text-[11px]">
@@ -113,7 +113,7 @@ const DraftCard = ({ action, onConfirm }) => {
         type="button"
         onClick={go}
         disabled={state === 'sending'}
-        className="mt-3 w-full bg-[#1c3541] text-white text-xs font-bold py-2 rounded-xl hover:bg-[#14262f] disabled:opacity-60 cursor-pointer"
+        className="mt-3 w-full bg-[#1c3541] text-white text-xs font-semibold py-2 rounded-xl hover:bg-[#14262f] disabled:opacity-60 cursor-pointer"
       >
         {state === 'sending' ? 'Submitting…' : 'Confirm & submit'}
       </button>
@@ -252,13 +252,13 @@ export const AiAssistantPanel = () => {
       <div className="bg-[#1c3541] text-white p-5 flex items-center justify-between shrink-0 border-b border-[#28495a]">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-[#e5b869]/20 text-[#e5b869] flex items-center justify-center font-bold ring-2 ring-[#e5b869]/40 relative">
-            <Sparkles className="w-5 h-5 animate-pulse" />
+            <Sparkles className="w-5 h-5" />
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#1c3541]" />
           </div>
           <div>
             <h3 className="font-serif-title text-lg font-bold text-white flex items-center gap-2">
               <span>Dayflow AI Assistant</span>
-              <span className="text-[10px] font-sans font-bold bg-[#e5b869] text-[#1c3541] px-2 py-0.5 rounded-full uppercase tracking-wider">
+              <span className="text-[10px] font-sans font-semibold bg-[#e5b869] text-[#1c3541] px-2 py-0.5 rounded-full uppercase tracking-wider">
                 HR Agent
               </span>
             </h3>
@@ -287,7 +287,7 @@ export const AiAssistantPanel = () => {
             className={`flex items-start gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
           >
             <div
-              className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 text-xs font-bold shadow-xs ${
+              className={`w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 text-xs font-semibold shadow-xs ${
                 msg.sender === 'user'
                   ? 'bg-[#1c3541] text-white ring-2 ring-[#1c3541]/20'
                   : 'bg-[#e5b869]/20 text-[#b5832a] border border-[#e5b869]/40'
@@ -357,7 +357,7 @@ export const AiAssistantPanel = () => {
 
       {/* Quick Prompts Chips */}
       <div className="px-6 py-2.5 bg-white border-t border-[#f3efe6] flex items-center gap-2 overflow-x-auto custom-scrollbar shrink-0">
-        <span className="text-[10px] uppercase font-bold text-slate-400 shrink-0 flex items-center gap-1">
+        <span className="text-[10px] uppercase font-semibold text-slate-400 shrink-0 flex items-center gap-1">
           <Sparkles className="w-3 h-3 text-[#e5b869]" /> Prompt:
         </span>
         {quickPrompts.map((qp, idx) => (
@@ -391,7 +391,7 @@ export const AiAssistantPanel = () => {
           <button
             type="submit"
             disabled={!inputPrompt.trim() || isLoading}
-            className="px-5 py-3 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white font-bold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2 shrink-0"
+            className="px-5 py-3 rounded-xl bg-[#1c3541] hover:bg-[#28495a] text-white font-semibold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2 shrink-0"
           >
             <span>Ask AI</span>
             <Send className="w-3.5 h-3.5 text-[#e5b869]" />

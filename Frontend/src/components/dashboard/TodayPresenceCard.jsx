@@ -12,13 +12,13 @@ export const TodayPresenceCard = ({ onDirectoryClick }) => {
       <div>
         {/* Header Tag & Title */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-[#a88243] font-mono">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-[#a88243] font-mono">
             ACROSS THE ORG
           </span>
           <button
             type="button"
             onClick={onDirectoryClick}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#b5832a] hover:text-[#1c3541] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#b5832a] hover:text-[#1c3541] transition-colors cursor-pointer"
           >
             <span>Directory</span>
             <ArrowRight className="w-3.5 h-3.5" />

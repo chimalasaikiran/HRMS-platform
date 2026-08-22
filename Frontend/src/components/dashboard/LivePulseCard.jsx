@@ -29,8 +29,8 @@ export const LivePulseCard = ({ onViewAttendance }) => {
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
         {/* Left Column Text Content */}
         <div className="max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#e5b869] text-[10px] font-bold tracking-widest uppercase mb-4 border border-white/10">
-            <span className="w-2 h-2 rounded-full bg-[#e5b869] animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-[#e5b869] text-[10px] font-semibold tracking-widest uppercase mb-4 border border-white/10">
+            <span className="w-2 h-2 rounded-full bg-[#e5b869] pulse-soft" />
             <span>LIVE PULSE</span>
           </div>
 
@@ -45,7 +45,7 @@ export const LivePulseCard = ({ onViewAttendance }) => {
           <button
             type="button"
             onClick={onViewAttendance}
-            className="inline-flex items-center gap-2 text-xs font-bold text-[#e5b869] hover:text-white transition-colors cursor-pointer group"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-[#e5b869] hover:text-white transition-colors cursor-pointer group"
           >
             <span>View attendance</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

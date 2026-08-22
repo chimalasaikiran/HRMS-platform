@@ -62,7 +62,7 @@ export const AttendanceStreamTable = () => {
       {/* Table Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-[#a88243] font-mono mb-1">
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-[#a88243] font-mono mb-1">
             REAL-TIME
           </div>
           <h3 className="font-serif-title text-2xl font-bold text-[#1c3541]">
@@ -72,7 +72,7 @@ export const AttendanceStreamTable = () => {
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 pulse-soft" />
             <span>Updated just now</span>
           </div>
 
@@ -93,7 +93,7 @@ export const AttendanceStreamTable = () => {
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-[#e8e2d5] text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            <tr className="border-b border-[#e8e2d5] text-[10px] font-semibold uppercase tracking-widest text-slate-400">
               <th className="py-3 px-4">PERSON</th>
               <th className="py-3 px-4">CHECK IN</th>
               <th className="py-3 px-4">CHECK OUT</th>
@@ -110,7 +110,7 @@ export const AttendanceStreamTable = () => {
                 {/* Person Column */}
                 <td className="py-4 px-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#ebdcb9] text-[#705220] font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-[#ebdcb9] text-[#705220] font-semibold text-xs flex items-center justify-center shrink-0">
                       {row.initials}
                     </div>
                     <div>

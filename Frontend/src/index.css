@@ -1,5 +1,45 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------
+   Type scale.
+
+   The UI was built almost entirely at 10-12px with 169 one-off
+   `text-[Npx]` values and no scale, which is the single biggest reason
+   it read as unfinished: no hierarchy, and body copy below the size
+   at which people comfortably read.
+
+   Sizes are nudged up one step and given real line heights. The steps
+   are small so nothing reflows badly, but the difference in density
+   and hierarchy is immediate.
+   --------------------------------------------------------------- */
+@theme {
+  --text-xs: 0.8125rem;      /* 13px, was 12 */
+  --text-xs--line-height: 1.15rem;
+  --text-sm: 0.875rem;       /* 14px */
+  --text-sm--line-height: 1.35rem;
+  --text-base: 0.9375rem;    /* 15px */
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.0625rem;      /* 17px */
+  --text-lg--line-height: 1.6rem;
+  --text-xl: 1.25rem;        /* 20px */
+  --text-xl--line-height: 1.7rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 1.95rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+}
+
+/* The one-off micro sizes, mapped onto the scale instead of left as
+   arbitrary pixel values. 9 and 10px are below comfortable reading size
+   for anything but the smallest label. */
+.text-\[9px\]  { font-size: 0.6875rem; line-height: 1rem; }
+.text-\[10px\] { font-size: 0.75rem;   line-height: 1.05rem; }
+.text-\[11px\] { font-size: 0.8125rem; line-height: 1.15rem; }
+.text-\[12px\] { font-size: 0.875rem;  line-height: 1.3rem; }
+
+
 @layer utilities {
   .font-serif-display {
     font-family: 'Instrument Serif', 'Cormorant Garamond', Georgia, serif;
@@ -138,3 +178,12 @@ h1, h2, h3 { letter-spacing: -0.015em; }
     scroll-behavior: auto !important;
   }
 }
+
+/* Tailwind's animate-pulse blinks opacity 1 -> 0.5, which on a small status
+   dot reads as a flashing alert rather than a presence indicator. This is the
+   slow breath used by chat and status UIs instead. */
+@keyframes softPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.72; transform: scale(0.92); }
+}
+.pulse-soft { animation: softPulse 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite; }

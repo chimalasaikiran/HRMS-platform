@@ -34,7 +34,7 @@ export const AttendanceView = () => {
     const st = (status || 'PRESENT').toUpperCase();
     if (st === 'PRESENT') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
           PRESENT
         </span>
@@ -42,7 +42,7 @@ export const AttendanceView = () => {
     }
     if (st === 'ABSENT') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-100 text-rose-800 border border-rose-200">
           <XCircle className="w-3 h-3 text-rose-600" />
           ABSENT
         </span>
@@ -50,14 +50,14 @@ export const AttendanceView = () => {
     }
     if (st === 'HALF_DAY') {
       return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
           <AlertTriangle className="w-3 h-3 text-amber-600" />
           HALF DAY
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-800 border border-blue-200">
         <FileCheck className="w-3 h-3 text-blue-600" />
         LEAVE
       </span>
@@ -118,7 +118,7 @@ export const AttendanceView = () => {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="text-xs font-bold text-[#1c3541] bg-transparent focus:outline-none cursor-pointer"
+              className="text-xs font-semibold text-[#1c3541] bg-transparent focus:outline-none cursor-pointer"
             >
               <option value="2025-10">Oct 2025</option>
               <option value="2025-09">Sep 2025</option>
@@ -132,22 +132,22 @@ export const AttendanceView = () => {
       {!isAdmin && (
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div className="bg-white p-5 rounded-2xl border border-[#e8e2d5] shadow-2xs">
-            <div className="text-xs text-slate-500 font-bold uppercase mb-1">Days Present</div>
+            <div className="text-xs text-slate-500 font-semibold uppercase mb-1">Days Present</div>
             <div className="font-serif-title text-2xl font-bold text-emerald-600">{daysPresent} Days</div>
             <div className="text-xs text-slate-400 mt-1">Confirmed check-ins</div>
           </div>
           <div className="bg-white p-5 rounded-2xl border border-[#e8e2d5] shadow-2xs">
-            <div className="text-xs text-slate-500 font-bold uppercase mb-1">Leaves Count</div>
+            <div className="text-xs text-slate-500 font-semibold uppercase mb-1">Leaves Count</div>
             <div className="font-serif-title text-2xl font-bold text-sky-600">{leavesCount} Days</div>
             <div className="text-xs text-slate-400 mt-1">Approved time off</div>
           </div>
           <div className="bg-white p-5 rounded-2xl border border-[#e8e2d5] shadow-2xs">
-            <div className="text-xs text-slate-500 font-bold uppercase mb-1">Total Working Days</div>
+            <div className="text-xs text-slate-500 font-semibold uppercase mb-1">Total Working Days</div>
             <div className="font-serif-title text-2xl font-bold text-[#1c3541]">22 Days</div>
             <div className="text-xs text-slate-400 mt-1">Standard month baseline</div>
           </div>
           <div className="bg-white p-5 rounded-2xl border border-[#e8e2d5] shadow-2xs">
-            <div className="text-xs text-slate-500 font-bold uppercase mb-1">Payable Days</div>
+            <div className="text-xs text-slate-500 font-semibold uppercase mb-1">Payable Days</div>
             <div className="font-serif-title text-2xl font-bold text-[#b5832a]">22.0 Days</div>
             <div className="text-xs text-slate-400 mt-1">Used for payroll calc</div>
           </div>
@@ -178,7 +178,7 @@ export const AttendanceView = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-[#e8e2d5] text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <tr className="border-b border-[#e8e2d5] text-[10px] font-semibold uppercase tracking-widest text-slate-400">
                 <th className="py-3 px-4">EMPLOYEE</th>
                 <th className="py-3 px-4">DATE</th>
                 <th className="py-3 px-4">CHECK IN</th>
