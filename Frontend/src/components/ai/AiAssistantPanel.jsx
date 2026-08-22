@@ -48,7 +48,12 @@ export const AiAssistantPanel = () => {
 
     try {
       const res = await aiApi.query({ prompt });
-      const aiReply = res.data?.answer || res.answer || res.data?.reply || 'I have processed your query against Dayflow HRMS database.';
+      const aiReply =
+        res?.reply ||
+        res?.data?.reply ||
+        res?.answer ||
+        res?.data?.answer ||
+        'I could not find an answer to that.';
 
       setMessages((prev) => [
         ...prev,
@@ -60,17 +65,9 @@ export const AiAssistantPanel = () => {
       ]);
     } catch (err) {
       console.error('AI query error:', err);
-      // Fallback smart response when offline or backend unreachable
-      let fallbackText = `I couldn't reach the backend server, but here is what I know:\n\n`;
-      if (prompt.toLowerCase().includes('leave')) {
-        fallbackText += `📅 **Leave Quotas**: Employees get 18 Paid Leaves, 10 Sick Leaves, and Unpaid Leaves subject to Admin approval. Submit requests via the Leave tab.`;
-      } else if (prompt.toLowerCase().includes('payroll') || prompt.toLowerCase().includes('salary')) {
-        fallbackText += `💰 **Salary Engine**: Basic = 50% of Wage, HRA = 50% of Basic, Standard Allowance = 4,167, Performance & LTA = 8.33% of Basic. Net Take-Home is calculated automatically.`;
-      } else if (prompt.toLowerCase().includes('who is on leave') || prompt.toLowerCase().includes('today')) {
-        fallbackText += `✈️ **Leaves Today**: 1 employee (Marcus Vance) is currently marked on approved Sick Leave.`;
-      } else {
-        fallbackText += `💡 **Dayflow Assistant**: Logged in as ${currentUser?.role} (${currentUser?.name}). You can check attendance, manage profiles, or apply for leave using the navigation menu.`;
-      }
+      const fallbackText =
+        "I couldn't reach the Dayflow server, so I can't look that up right now. " +
+        'Please try again in a moment, or check with HR.';
 
       setMessages((prev) => [
         ...prev,

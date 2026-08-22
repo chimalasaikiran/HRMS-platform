@@ -72,7 +72,7 @@ export const Dashboard = () => {
           {activeTab === 'leave' && <LeaveView />}
           {activeTab === 'payroll' && <PayrollView />}
           {activeTab === 'profile' && <ProfileView />}
-          {activeTab === 'ai' && <AiAssistantPanel />}
+          {activeTab === 'assistant' && <AiAssistantPanel />}
         </main>
       </div>
     </div>
