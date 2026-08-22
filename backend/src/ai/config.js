@@ -18,6 +18,13 @@ const CONFIG = {
   },
 
   rag: {
+    /**
+     * Policy retrieval loads all-MiniLM-L6-v2 in-process (~100-150MB). On a memory
+     * constrained host (Render free tier is 512MB) set AI_RAG_ENABLED=false: policy
+     * questions then degrade to "check with HR" while every database-backed tool —
+     * leave, attendance, payslips, approvals — keeps working normally.
+     */
+    enabled: process.env.AI_RAG_ENABLED !== 'false',
     collection: 'hr_policies',
     embeddingModel: 'Xenova/all-MiniLM-L6-v2',
     vectorSize: 384,
