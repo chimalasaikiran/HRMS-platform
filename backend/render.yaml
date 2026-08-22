@@ -18,3 +18,11 @@ services:
         sync: false
       - key: JWT_EXPIRES_IN
         value: 7d
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
