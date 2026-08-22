@@ -4,3 +4,9 @@ node_modules/
 .DS_Store
 .env.local
 .env.*.local
+
+# Cursor / agent — never push
+.cursor/
+.agent/
+agent-transcripts/
+*.canvas.tsx

@@ -11,7 +11,7 @@ Welcome to the **HRMS Platform** repository. Dayflow is a Human Resource Managem
 | Member | Owns |
 |--------|------|
 | Hari | AI agent / RAG (`POST /api/ai/chat`) |
-| Member 2 (vamsi) | Express + MongoDB — [`backend/`](./backend/) |
+| Member 2 (vamsi) | Express + MongoDB — this folder |
 | Member 3 | React frontend (`client/` / `Frontend/`) |
 
 Docs: [`docs/PLAN.md`](./docs/PLAN.md) · [`docs/api-contract.md`](./docs/api-contract.md) · [`docs/02-backend-db.md`](./docs/02-backend-db.md)
@@ -45,7 +45,7 @@ Docs: [`docs/PLAN.md`](./docs/PLAN.md) · [`docs/api-contract.md`](./docs/api-co
 | Layer | Technology |
 |-------|------------|
 | Frontend | React (Vite), Tailwind CSS |
-| Backend | Node.js, Express (`backend/`) |
+| Backend | Node.js, Express |
 | Database | MongoDB Atlas, Mongoose |
 | Validation | Zod |
 | Auth | JWT + bcrypt |
@@ -68,17 +68,16 @@ netPayable = netPay × (payableDays ÷ totalWorkingDays)
 ## Repository Structure
 
 ```
-HRMS-platform/
-├── backend/                  # Member 2 — Express + MongoDB (this branch)
-│   └── src/
-│       ├── models/
-│       ├── routes/
-│       ├── services/
-│       ├── middleware/
-│       └── seed.js
+backend/                      # Member 2 — Express + MongoDB (vamsi branch)
+├── src/
+│   ├── models/
+│   ├── routes/
+│   ├── services/
+│   ├── middleware/
+│   └── seed.js
 ├── docs/                     # Spec + API contract
 ├── render.yaml               # Render blueprint for dayflow-api
-├── client/ or Frontend/      # Member 3 — React (when merged)
+├── PROJECT.md
 └── README.md
 ```
 
@@ -94,16 +93,16 @@ npm run dev
 ```
 
 API: `http://localhost:5000/api`  
-Demo logins: see [`backend/SEED.md`](./backend/SEED.md)
+Demo logins: see [`SEED.md`](./SEED.md)
 
 ---
 
 ## Deploy on Render
 
-Repo includes [`render.yaml`](./render.yaml) (Web Service `dayflow-api`, root `backend/`).
+Includes [`render.yaml`](./render.yaml) (Web Service `dayflow-api`).
 
 1. Use branch **`vamsi`**
-2. [Render Dashboard](https://dashboard.render.com) → **New** → **Blueprint** (or Web Service, Root Directory `backend`)
+2. [Render Dashboard](https://dashboard.render.com) → **New** → **Web Service**, Root Directory `backend`
 3. Env vars (do **not** commit `.env`):
    - `MONGODB_URI`
    - `JWT_SECRET`

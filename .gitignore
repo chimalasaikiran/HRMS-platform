@@ -9,3 +9,12 @@ node_modules/
 dist/
 build/
 .coverage
+
+# Cursor / agent — never push
+.cursor/
+**/.cursor/
+.agent/
+**/.agent/
+agent-transcripts/
+**/agent-transcripts/
+*.canvas.tsx
