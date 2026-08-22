@@ -9,8 +9,8 @@ import { AlertCircle, Mail, Lock } from 'lucide-react';
 export const SignInForm = ({ onSwitchToSignUp, onSuccessRedirect }) => {
   const { login } = useAuth();
 
-  const [role, setRole] = useState('HR / People team');
-  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('ADMIN');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -19,14 +19,14 @@ export const SignInForm = ({ onSwitchToSignUp, onSuccessRedirect }) => {
     e.preventDefault();
     setErrorMessage('');
 
-    if (!email || !password) {
-      setErrorMessage('Please enter both work email and password.');
+    if (!identifier || !password) {
+      setErrorMessage('Please enter both Login ID / Email and password.');
       return;
     }
 
     try {
       setIsLoading(true);
-      await login({ email, password, role });
+      await login({ identifier, password, role });
       if (onSuccessRedirect) {
         onSuccessRedirect();
       }
@@ -39,7 +39,6 @@ export const SignInForm = ({ onSwitchToSignUp, onSuccessRedirect }) => {
 
   return (
     <div className="animate-fade-in">
-      {/* Header section */}
       <div className="mb-6">
         <div className="flex items-center justify-between gap-2 mb-1">
           <div className="text-[#c89e60] text-xs font-bold uppercase tracking-[0.18em]">
@@ -55,7 +54,6 @@ export const SignInForm = ({ onSwitchToSignUp, onSuccessRedirect }) => {
         </p>
       </div>
 
-      {/* Error alert banner */}
       {errorMessage && (
         <div className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-xs sm:text-sm text-red-700 animate-fade-in shadow-xs">
           <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
@@ -66,18 +64,16 @@ export const SignInForm = ({ onSwitchToSignUp, onSuccessRedirect }) => {
         </div>
       )}
 
-      {/* Role Selection Toggle */}
       <RoleSelector selectedRole={role} onChange={setRole} label="I'm signing in as" />
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-1">
         <Input
-          id="signInEmail"
-          label="Work email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter the Gmail"
+          id="signInIdentifier"
+          label="Login ID or Email"
+          type="text"
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
+          placeholder="OIJODO20220001 or john.doe@dayflow.com"
           leftIcon={Mail}
           required
         />
@@ -88,12 +84,11 @@ export const SignInForm = ({ onSwitchToSignUp, onSuccessRedirect }) => {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="password"
+          placeholder="Password"
           leftIcon={Lock}
           required
         />
 
-        {/* Submit Button */}
         <div className="pt-3">
           <Button type="submit" isLoading={isLoading} fullWidth>
             Enter Dayflow
@@ -101,7 +96,6 @@ export const SignInForm = ({ onSwitchToSignUp, onSuccessRedirect }) => {
         </div>
       </form>
 
-      {/* Bottom Switcher Link */}
       <div className="mt-6 text-center text-xs sm:text-sm text-slate-500">
         Need an account?{' '}
         <button
@@ -115,3 +109,4 @@ export const SignInForm = ({ onSwitchToSignUp, onSuccessRedirect }) => {
     </div>
   );
 };
+
